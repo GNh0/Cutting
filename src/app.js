@@ -45,8 +45,8 @@ const row=(label,w,h,qty,extra={})=>({id:crypto.randomUUID(),label,w,h,qty,mater
 const settings=()=>({kerf:3,trim:0,rotate:true,material:true,grain:false,single:false,priority:'area',quality:'thorough',minRemnant:100});
 const demo=()=>({version:1,id:crypto.randomUUID(),name:'책장 제작 프로젝트',unit:'mm',settings:settings(),parts:[row('측판',800,300,2,{edges:{top:true}}),row('선반',564,300,4,{edges:{top:true}}),row('상·하판',600,320,2,{edges:{top:true}}),row('뒷판',764,564,1),row('보강대',564,80,2)],stocks:[row('자작 합판 18T',2440,1220,3,{grain:'x'})]});
 const emptyProject=()=>({version:1,id:crypto.randomUUID(),name:'새 프로젝트',unit:'mm',settings:settings(),parts:[],stocks:[]});
-let project=demo(),restored=false,storageWarning=false;
-try {const raw=localStorage.getItem(storageKey);if(raw){const p=JSON.parse(raw);if(p.version===1&&p.settings&&Array.isArray(p.parts)&&Array.isArray(p.stocks)&&p.parts.length<=1000&&p.stocks.length<=1000){project=p;project.settings={...settings(),...p.settings};project.unit=FACTORS[p.unit]?p.unit:'mm';restored=true;}}}catch{}
+let project=emptyProject(),storageWarning=false;
+try {const raw=localStorage.getItem(storageKey);if(raw){const p=JSON.parse(raw);if(p.version===1&&p.settings&&Array.isArray(p.parts)&&Array.isArray(p.stocks)&&p.parts.length<=1000&&p.stocks.length<=1000){project=p;project.settings={...settings(),...p.settings};project.unit=FACTORS[p.unit]?p.unit:'mm';}}}catch{}
 let inputTab='parts',resultTab='layout',result=null,resultProject=null,dirty=false,selectedSheet=0,selectedPart=null,selectedCut=null;
 let expanded=new Set(),worker=null,toastTimer=null,view={labels:true,cuts:false,zoom:100,rotated:false,pan:false};
 const f=()=>FACTORS[project.unit]||1;
@@ -273,4 +273,3 @@ $('#result-body').addEventListener('pointerup',finishDrag);$('#result-body').add
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();if(!worker)calculate();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveSnapshot();}});
 window.addEventListener('pagehide',()=>{cancelCalculation(false);clearTimeout(toastTimer);});
 hydrate();renderAll();persist();
-if(!restored)calculate();
