@@ -1,6 +1,7 @@
 import {validateProject} from './optimizer.js';
 import {csv,importRows,readProject} from './io.js';
 import {dimensionGeometry,rotateBinForView} from './diagram.js';
+import {groupRemnants,carryRemnantStock} from './remnants.js';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -116,15 +117,14 @@ function renderResults(){
   $('#result-body').innerHTML=html+remnantSummary();
 }
 function remnantSummary(){const reusable=result.remnants.filter(r=>r.reusable);if(!reusable.length)return '';const largest=[...reusable].sort((a,b)=>b.w*b.h-a.w*a.h)[0];return `<div class="remnant-summary"><div><strong>재사용 가능한 잔재 ${reusable.length}개 · ${area(result.reusableArea)}</strong><small>가장 큰 잔재 ${dim(largest.w)} × ${dim(largest.h)} ${unit()} · 최소 폭 ${dim(result.settings.minRemnant??100)} ${unit()} 기준</small></div><button class="button" id="reuse-remnants">잔재로 다음 작업</button></div>`;}
-function remnantTable(){return `<div class="summary-content"><h3>실제 절단 후 남는 직사각형 잔재</h3><p class="section-note">폭과 길이가 모두 ${dim(result.settings.minRemnant??100)} ${unit()} 이상인 잔재를 재사용 가능으로 표시합니다. 톱날로 사라진 영역은 잔재에 포함하지 않습니다.</p><div class="table-scroll"><table class="remnant-table"><thead><tr><th>원판</th><th>치수 (${unit()})</th><th>면적</th><th>판정</th></tr></thead><tbody>${[...result.remnants].sort((a,b)=>b.w*b.h-a.w*a.h).map(r=>`<tr data-remnant-sheet="${r.sheet}" data-remnant-index="${r.index}" tabindex="0"><td>${r.sheet+1}</td><td>${dim(r.w)} × ${dim(r.h)}</td><td>${area(r.w*r.h)}</td><td><span class="remnant-tag ${r.reusable?'':'scrap-tag'}">${r.reusable?'재사용 가능':'자투리'}</span></td></tr>`).join('')}</tbody></table></div>${remnantSummary()}</div>`;}
+function remnantTable(){return `<div class="summary-content"><h3>실제 절단 후 남는 직사각형 잔재</h3><p class="section-note">폭과 길이가 모두 ${dim(result.settings.minRemnant??100)} ${unit()} 이상인 잔재를 재사용 가능으로 표시합니다. 같은 가로·세로·재질·결 방향의 잔재는 수량을 합산합니다. 원판 번호를 누르면 해당 위치를 확인합니다. 톱날로 사라진 영역은 잔재에 포함하지 않습니다.</p><div class="table-scroll"><table class="remnant-table"><thead><tr><th>치수 (${unit()})</th><th>재질 / 결</th><th>수량</th><th>총면적</th><th>판정</th><th>출처 원판</th></tr></thead><tbody>${groupRemnants(result.remnants).sort((a,b)=>b.w*b.h-a.w*a.h).map(r=>`<tr><td>${dim(r.w)} × ${dim(r.h)}</td><td>${esc(r.material||'재질 미지정')} / ${grainLabel(r.grain)}</td><td>${r.qty}개</td><td>${area(r.area)}</td><td><span class="remnant-tag ${r.reusable?'':'scrap-tag'}">${r.reusable?'재사용 가능':'자투리'}</span></td><td>${r.sources.map(s=>`<button class="text-button" data-remnant-sheet="${s.sheet}" data-remnant-index="${s.index}" aria-label="원판 ${s.sheet+1}의 잔재 ${s.index+1} 위치 보기">${s.sheet+1}</button>`).join(' ')}</td></tr>`).join('')}</tbody></table></div>${remnantSummary()}</div>`;}
 function reuseRemnants(){
   if(dirty){notify('입력값이 변경되었습니다. 먼저 다시 계산하세요.',true);return;}
   const reusable=result.remnants.filter(r=>r.reusable);if(!reusable.length)return;
   if(!confirm('현재 프로젝트를 보관함에 저장하고, 사용한 원판을 재고에서 차감한 뒤 잔재를 포함한 다음 작업을 시작할까요?'))return;
+  let stocks;try{stocks=carryRemnantStock(resultProject.stocks,result.bins,reusable,row);}catch(e){notify(e.message,true);return;}
   const snapshot={...structuredClone(resultProject),savedAt:new Date().toISOString()};
   try{const items=library().filter(p=>p.id!==snapshot.id);localStorage.setItem(libraryKey,JSON.stringify([snapshot,...items].slice(0,30)));}catch{notify('현재 프로젝트를 보관하지 못했습니다. 먼저 파일로 저장하세요.',true);return;}
-  const stocks=resultProject.stocks.filter(r=>r.enabled!==false).map(r=>({...structuredClone(r),qty:r.qty-result.bins.filter(b=>b.stock.id===r.id).length})).filter(r=>r.qty>0);
-  for(const [i,r]of reusable.entries())stocks.push(row(`잔재 ${i+1} (원판 ${r.sheet+1})`,r.w,r.h,1,{material:r.material,grain:r.grain}));
   const next={version:1,id:crypto.randomUUID(),name:resultProject.name+' · 잔재 재사용',unit:project.unit,settings:{...resultProject.settings},parts:[],stocks};replaceProject(next,'사용 원판을 차감하고 잔재와 미사용 원판을 다음 작업으로 가져왔습니다.');inputTab='stocks';renderEditor();
 }
 function sheetNavigation(){return `<div class="board-navigation"><div class="sheet-title">원판 <select id="sheet-select" aria-label="원판 선택">${result.bins.map((b,i)=>`<option value="${i}" ${i===selectedSheet?'selected':''}>${i+1}. ${esc(b.stock.label)}</option>`).join('')}</select><span>${selectedSheet+1} / ${result.bins.length}</span></div><div class="sheet-nav-buttons"><button class="button" id="prev-sheet" aria-label="이전 원판" ${selectedSheet===0?'disabled':''}>${icon('left')}</button><button class="button" id="next-sheet" aria-label="다음 원판" ${selectedSheet===result.bins.length-1?'disabled':''}>${icon('right')}</button></div></div>`;}
