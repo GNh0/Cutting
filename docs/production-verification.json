@@ -1,0 +1,17 @@
+{
+  "scenarioCount": 1000,
+  "newScenarioIndexRange": [
+    1000000,
+    1000999
+  ],
+  "allMatchedFrozenHybrid": true,
+  "allPhysicalAuditsPassed": true,
+  "referenceEngineSha256": "414bc6755450f85f27ab199a37971580f34228cbfca3e3f103b51388294aef25",
+  "productionEngineSha256": "c442b7e11dc46e2ce8f1c348f9f9c9281d968b3edde391322815c8ae374c6648",
+  "actualHybridTiming": {
+    "meanMs": 5.240295499999982,
+    "medianMs": 4.739999999999782,
+    "p95Ms": 10.679399999999987,
+    "maxMs": 20.717400000000453
+  }
+}

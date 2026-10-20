@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {dimensionGeometry,rotateBinForView} from '../src/diagram.js';
+test('part and remnant dimensions project to the outside of the entire sheet',()=>{const g=dimensionGeometry({x:50,y:80,w:700,h:350},{x:100,y:180,w:160,h:90});assert.deepEqual(g.horizontal,{x1:100,x2:260,y:453,labelX:180,labelY:469});assert.deepEqual(g.vertical,{y1:180,y2:270,x:773,labelX:789,labelY:225});});
+test('portrait view transforms stock, part, remnant and banding together without changing physical input',()=>{const bin={stock:{w:2440,h:1220,grain:'x'},parts:[{x:0,y:0,w:764,h:564,grain:'x',rotated:false,edges:{top:true},instance:'a'}],free:[{x:1406,y:567,w:1034,h:653}],cuts:[]};const view=rotateBinForView(bin);assert.equal(view.stock.w,1220);assert.equal(view.stock.h,2440);assert.deepEqual([view.parts[0].x,view.parts[0].y,view.parts[0].w,view.parts[0].h],[0,1676,564,764]);assert.equal(view.parts[0].edges.left,true);assert.deepEqual([view.free[0].x,view.free[0].y,view.free[0].w,view.free[0].h],[567,0,653,1034]);assert.equal(bin.stock.w,2440);});

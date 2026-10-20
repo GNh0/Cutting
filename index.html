@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#143c34">
+  <meta name="description" content="개인용 판재 절단 최적화. 톱날 두께와 재질, 결 방향을 고려한 배치도를 브라우저에서 만들고 저장하세요.">
+  <title>Cutting — 판재 절단 최적화</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" aria-label="사이트 탐색">
+      <a class="brand-mark" href="./" aria-label="Cutting 홈"><svg viewBox="0 0 32 32" fill="none"><path d="M5 5h22v8H16v14H5z" fill="currentColor"/><path d="M20 17h7v10h-7z" fill="currentColor" opacity=".45"/></svg></a>
+      <span class="rail-line"></span>
+      <button class="rail-button active" id="workspace-button" aria-label="작업 공간" title="작업 공간" data-icon="layout"></button>
+      <button class="rail-button" id="library-button" aria-label="저장된 프로젝트" title="저장된 프로젝트" data-icon="folder"></button>
+      <button class="rail-button" id="help-button" aria-label="사용 안내" title="사용 안내" data-icon="help"></button>
+      <span class="rail-spacer"></span>
+      <a class="rail-button" href="https://github.com/GNh0/Cutting" target="_blank" rel="noopener noreferrer" aria-label="GitHub 소스" title="GitHub 소스" data-icon="github"></a>
+      <span class="personal-avatar" title="개인 작업 공간">ME</span>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar">
+        <a class="wordmark" href="./">Cutting<span class="wordmark-dot">.</span></a>
+        <span class="header-divider"></span><span class="workspace-label">개인 작업 공간</span>
+        <span class="topbar-spacer"></span><span class="local-badge"><i></i> 브라우저에서 계산</span>
+        <button class="button quiet compact" id="top-help" data-icon="help" aria-label="도움말"></button>
+      </header>
+      <main>
+        <section class="page-heading">
+          <div><div class="eyebrow">CUT SMART. WASTE LESS.</div><h1>더 적은 원판, 더 나은 배치.</h1><p>필요한 부재를 입력하고, 나만의 절단 계획을 만들어 보세요.</p></div>
+          <div class="heading-actions"><button class="button" id="load-project"><span data-icon="upload"></span><span>불러오기</span></button><button class="button" id="save-project"><span data-icon="save"></span><span>프로젝트 저장</span></button></div>
+        </section>
+        <section class="project-bar" aria-label="현재 프로젝트">
+          <span class="project-symbol" data-icon="file"></span><input id="project-name" aria-label="프로젝트 이름" maxlength="100" value="책장 제작 프로젝트">
+          <span id="save-status" class="save-status" role="status">자동 저장 준비</span>
+          <span class="project-spacer"></span><label class="unit-control">단위 <select id="unit" aria-label="치수 단위"><option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option><option value="in">inch</option></select></label>
+          <button class="button quiet compact" id="demo-button" title="예제 데이터 불러오기" aria-label="예제 데이터 불러오기" data-icon="sparkles"></button>
+          <button class="button quiet compact" id="new-project" title="새 프로젝트" aria-label="새 프로젝트" data-icon="plus"></button>
+        </section>
+        <div class="workspace-grid">
+          <div class="input-column">
+            <section class="card input-card">
+              <div class="tabs input-tabs" role="tablist" aria-label="입력 종류"><button role="tab" aria-selected="true" id="parts-tab" data-input-tab="parts"><span data-icon="panels"></span>절단 부재 <span class="count" id="parts-count">0</span></button><button role="tab" aria-selected="false" id="stocks-tab" data-input-tab="stocks"><span data-icon="layers"></span>보유 원판 <span class="count" id="stocks-count">0</span></button></div>
+              <div class="input-description"><span id="input-description">완성할 부재의 치수와 수량을 입력하세요.</span><button class="text-button" id="import-csv"><span data-icon="upload"></span>CSV / 붙여넣기</button></div>
+              <div id="input-table" class="table-scroll"></div>
+              <div class="table-footer"><button class="text-button" id="add-row"><span data-icon="plus"></span>행 추가</button><button class="text-button muted" id="export-csv"><span data-icon="download"></span>CSV 내보내기</button></div>
+              <div class="input-total" id="input-total"></div>
+            </section>
+            <section class="card settings-card">
+              <div class="card-heading"><h2><span data-icon="sliders"></span>최적화 설정</h2><span class="small-badge">내 작업에 맞게</span></div>
+              <div class="settings-numbers"><label>톱날 두께 <span class="tooltip" title="절단할 때 톱날이 소모하는 폭입니다.">ⓘ</span><div class="number-with-unit"><input type="number" id="kerf" min="0" step="any" aria-label="톱날 두께"><span class="unit-label">mm</span></div></label><label>가장자리 여유 <span class="tooltip" title="원판의 네 가장자리에서 사용할 수 없는 영역입니다. 정재단 작업은 절단 순서에서 제외됩니다.">ⓘ</span><div class="number-with-unit"><input type="number" id="trim" min="0" step="any" aria-label="가장자리 여유"><span class="unit-label">mm</span></div></label></div>
+              <label class="switch-row"><span><strong>부재 회전 허용</strong><small>공간에 맞춰 90° 회전</small></span><input type="checkbox" role="switch" id="rotate"><span class="switch"></span></label>
+              <label class="switch-row"><span><strong>재질별로 구분</strong><small>같은 재질의 원판에만 배치</small></span><input type="checkbox" role="switch" id="material"><span class="switch"></span></label>
+              <label class="switch-row"><span><strong>결 방향 유지</strong><small>부재와 원판의 결 방향 일치</small></span><input type="checkbox" role="switch" id="grain"><span class="switch"></span></label>
+              <details id="advanced-settings"><summary>고급 설정 <span data-icon="chevron"></span></summary><div class="advanced-inner"><label class="switch-row"><span><strong>원판 한 장만 사용</strong><small>선택된 원판 한 장 내에서만 배치</small></span><input type="checkbox" role="switch" id="single"><span class="switch"></span></label><label class="select-row">최적화 우선순위<select id="priority" aria-label="최적화 우선순위"><option value="area">원판 최소 · 재사용 면적 우선</option><option value="remnant">원판 최소 · 큰 잔재 우선</option><option value="cuts">절단 횟수 최소</option></select></label><label class="select-row">탐색 수준<select id="quality" aria-label="탐색 수준"><option value="quick">빠르게 · 30개 후보</option><option value="balanced">균형 · 120개 후보</option><option value="thorough">정밀 · 240개 후보</option></select></label><p class="field-note">엣지밴딩은 각 부재의 상세에서 표시합니다. 치수 차감 없이 밴딩 위치와 필요 길이를 계산합니다.</p></div></details>
+              <div class="remnant-setting"><label for="minRemnant">재사용 잔재 최소 폭 <span class="tooltip" title="잔재의 가로와 세로가 모두 이 값 이상일 때 재사용 가능으로 집계합니다.">ⓘ</span></label><div class="number-with-unit"><input type="number" id="minRemnant" min="0" step="any" aria-label="재사용 잔재 최소 폭"><span class="unit-label">mm</span></div></div>
+              <button class="button primary optimize-button" id="optimize"><span data-icon="sparkles"></span><span id="optimize-label">최적 배치 계산</span><kbd>Ctrl ↵</kbd></button>
+              <button class="text-button cancel-button" id="cancel" hidden>계산 취소</button><div class="progress" id="progress" hidden><div></div></div>
+              <p class="calculation-note"><span data-icon="shield"></span>입력한 치수는 서버로 전송되지 않습니다.</p>
+            </section>
+          </div>
+          <section class="result-column" aria-label="최적화 결과">
+            <div class="metrics" id="metrics"></div>
+            <section class="card results-card">
+              <div class="result-toolbar"><div class="tabs result-tabs" role="tablist" aria-label="결과 보기"><button role="tab" aria-selected="true" data-result-tab="layout"><span data-icon="layout"></span>배치도</button><button role="tab" aria-selected="false" data-result-tab="cuts"><span data-icon="scissors"></span>절단 순서</button><button role="tab" aria-selected="false" data-result-tab="summary"><span data-icon="chart"></span>상세 통계</button></div><button class="button quiet compact" id="print-result" title="인쇄 / PDF 저장" aria-label="인쇄 / PDF 저장" data-icon="printer"></button></div>
+              <div id="result-notice" role="status"></div>
+              <div id="result-body"></div>
+            </section>
+            <div class="result-footnote"><span data-icon="info"></span>직선으로 끝까지 절단하는 길로틴 방식 · 여러 후보 중 가장 나은 배치를 선택합니다.</div>
+          </section>
+        </div>
+        <footer class="page-footer"><span>Cutting<span class="wordmark-dot">.</span> <span class="footer-separator">/</span> 작은 공방을 위한 절단 계획</span><span>개인용 · 계정 없이 · 내 브라우저에 저장</span></footer>
+      </main>
+    </div>
+  </div>
+  <dialog id="modal"><div class="modal-header"><h2 id="modal-title"></h2><button class="button quiet compact" id="close-modal" aria-label="닫기" data-icon="close"></button></div><div id="modal-content"></div></dialog>
+  <input type="file" id="project-file" accept=".json,application/json" hidden><input type="file" id="csv-file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <section id="print-area"></section>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
