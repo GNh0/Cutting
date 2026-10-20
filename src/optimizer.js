@@ -1,7 +1,9 @@
 // Independent guillotine packing engine. All lengths are millimetres.
+import {materialKey,materialInfo,materialGroups} from './materials.js';
+import {sharedCutPlan,orderCutPlan} from './cut-plan.js';
 const EPS = 1e-7;
 export const LIMIT = 1000;
-export function validateProject(project) {
+export function validateProject(project,{allowIncomplete=false}={}) {
   const errors=[];
   if (!project || !Array.isArray(project.parts) || !Array.isArray(project.stocks) || !project.settings) return ['프로젝트 형식이 올바르지 않습니다.'];
   const s=project.settings;
@@ -18,8 +20,11 @@ export function validateProject(project) {
       ids.add(r.id);
       if(![r.w,r.h,r.qty].every(v=>typeof v==='number'&&Number.isFinite(v)))errors.push(`${kind} ${i+1}행: 치수와 수량의 데이터 형식이 올바르지 않습니다.`);
       if(typeof r.material!=='string'||typeof r.label!=='string'||r.label.length>200||r.material.length>200)errors.push(`${kind} ${i+1}행: 이름과 재질은 200자 이하의 텍스트이어야 합니다.`);
+      if(!['manufacturer','lot'].every(k=>typeof r[k]==='string'&&r[k].length<=200))errors.push(`${kind} ${i+1}행: 제조사와 LOT은 200자 이하의 텍스트이어야 합니다.`);
+      if(!((allowIncomplete||r.enabled===false)&&r.thickness===null)&&(!Number.isFinite(r.thickness)||r.thickness<=0||r.thickness>1000000))errors.push(`${kind} ${i+1}행: 두께는 필수이며 0 초과, 1,000,000 mm 이하의 숫자이어야 합니다.`);
       if(!['none','x','y'].includes(r.grain))errors.push(`${kind} ${i+1}행: 결 방향이 올바르지 않습니다.`);
       if(r.enabled===false) continue;
+      if(!allowIncomplete&&typeof r.material==='string'&&!r.material.trim())errors.push(`${kind} ${i+1}행: 재질을 입력하세요.`);
       if (![r.w,r.h].every(v=>Number.isFinite(v)&&v>0&&v<=1000000)) errors.push(`${kind} ${i+1}행: 가로·세로는 0 초과, 1,000,000 mm 이하이어야 합니다.`);
       if (!Number.isInteger(r.qty)||r.qty<1||r.qty>LIMIT) errors.push(`${kind} ${i+1}행: 수량은 1~${LIMIT}의 정수이어야 합니다.`);
       if (kind==='부재') count+=r.qty;
@@ -55,7 +60,7 @@ function split(f,o,k,vertical) {
   }
   return {free,cuts};
 }
-const matches=(p,stock,s)=>!s.material||p.material.trim()===stock.material.trim();
+const matches=(p,stock)=>materialKey(p)===materialKey(stock);
 function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null) {
   if(!matches(p,bin.stock,s)) return null;
   let best=null;
@@ -112,7 +117,7 @@ function run(pieces,stocks,s,variant,strategy=null,scoringMode=null) {
   const cutLength=bins.reduce((n,b)=>n+b.cuts.reduce((a,c)=>a+c.length,0),0);
   const cutCount=bins.reduce((n,b)=>n+b.cuts.length,0);
   const minRemnant=s.minRemnant??100;
-  const remnants=bins.flatMap((b,i)=>b.free.map((r,j)=>({...r,sheet:i,index:j,material:b.stock.material,grain:b.stock.grain,reusable:Math.min(r.w,r.h)>=minRemnant-EPS})));
+  const remnants=bins.flatMap((b,i)=>b.free.map((r,j)=>({...r,sheet:i,index:j,...materialInfo(b.stock),grain:b.stock.grain,reusable:Math.min(r.w,r.h)>=minRemnant-EPS})));
   const reusable=remnants.filter(r=>r.reusable),reusableArea=reusable.reduce((n,r)=>n+r.w*r.h,0),largestRemnant=Math.max(0,...reusable.map(r=>r.w*r.h));
   return {bins,unplaced,usedArea,stockArea,wasteArea:stockArea-usedArea,cutLength,cutCount,remnants,reusableArea,largestRemnant,placed:pieces.length-unplaced.length,total:pieces.length};
 }
@@ -125,11 +130,12 @@ function better(a,b,priority,rankMode='balanced') {
   for(let i=0;i<aa.length;i++) if(Math.abs(aa[i]-bb[i])>EPS) return aa[i]<bb[i];
   return false;
 }
-export function optimizeHybrid(project,onProgress=()=>{},baseBudget=48){
+export function optimizeHybrid(project,onProgress=()=>{},baseBudget=48,partition=true,refineCuts=true){
+  if(partition)return optimize(project,onProgress,{family:'hybrid',budget:baseBudget,refineCuts});
   const profiles=[{family:'current',budget:baseBudget,rankMode:'largest'},{family:'current',budget:baseBudget},{family:'portfolio',budget:baseBudget*2},{family:'guided',budget:baseBudget}];
   const total=baseBudget*5;let done=0,best=null,selectedFamily=null;
   for(const profile of profiles){
-    const candidate=optimize(project,percent=>onProgress(Math.round((done+profile.budget*percent/100)/total*100)),profile);
+    const candidate=optimize(project,percent=>onProgress(Math.round((done+profile.budget*percent/100)/total*100)),{...profile,partition:false,refineCuts});
     if(better(candidate,best,project.settings.priority)){best=candidate;selectedFamily=profile.family;}
     done+=profile.budget;
   }
@@ -137,7 +143,8 @@ export function optimizeHybrid(project,onProgress=()=>{},baseBudget=48){
 }
 export function optimize(project,onProgress=()=>{},options={}) {
   const errors=validateProject(project); if(errors.length) throw new Error(errors.join('\n'));
-  if((options.family||'hybrid')==='hybrid')return optimizeHybrid(project,onProgress,options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24));
+  if(options.partition!==false)return optimizeGroups(project,onProgress,options);
+  if((options.family||'hybrid')==='hybrid')return optimizeHybrid(project,onProgress,options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24),false,options.refineCuts!==false);
   const pieces=project.parts.filter(r=>r.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
   const stocks=project.stocks.filter(r=>r.enabled!==false),s=project.settings;
   const iterations=options.budget??(s.quality==='quick'?6:s.quality==='thorough'?48:24);
@@ -165,4 +172,26 @@ export function optimize(project,onProgress=()=>{},options={}) {
     onProgress(Math.round((v+1)/iterations*100),result,{variant:v,strategy});
   }
   return {...best,iterations,settings:{...s}};
+}
+
+export function optimizeCutPlans(result,s){
+  const bins=result.bins.map(b=>sharedCutPlan(b,s,{maxStates:512})||orderCutPlan(b,s));
+  const remnants=bins.flatMap((b,sheet)=>b.free.map((r,index)=>({...r,sheet,index,...materialInfo(b.stock),grain:b.stock.grain,reusable:Math.min(r.w,r.h)>=(s.minRemnant??100)-EPS})));
+  return {...result,bins,remnants,cutCount:bins.reduce((n,b)=>n+b.cuts.length,0),cutLength:bins.reduce((n,b)=>n+b.cuts.reduce((a,c)=>a+c.length,0),0),reusableArea:remnants.filter(r=>r.reusable).reduce((n,r)=>n+r.w*r.h,0),largestRemnant:Math.max(0,...remnants.filter(r=>r.reusable).map(r=>r.w*r.h))};
+}
+
+function optimizeGroups(project,onProgress,options){
+  const groups=materialGroups(project.parts.filter(r=>r.enabled!==false));
+  const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family||'hybrid'};
+  groups.forEach((g,i)=>{
+    const parts=g.rows.map(x=>x.row),stocks=project.stocks.filter(s=>s.enabled!==false&&materialKey(s)===g.key);
+    const layout=stocks.length?optimize({...project,parts,stocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
+    const r=options.refineCuts===false?layout:optimizeCutPlans(layout,project.settings);
+    const offset=output.bins.length;
+    output.groups.push({key:g.key,...materialInfo(g),sheets:r.bins.map((_,j)=>offset+j),placed:r.placed,total:r.total,unplaced:r.unplaced.length,stockArea:r.stockArea,usedArea:r.usedArea});
+    output.bins.push(...r.bins);output.unplaced.push(...r.unplaced);output.remnants.push(...r.remnants.map(x=>({...x,sheet:x.sheet+offset})));
+    for(const key of ['usedArea','stockArea','wasteArea','cutLength','cutCount','reusableArea','placed','total','iterations'])output[key]+=r[key];
+    output.largestRemnant=Math.max(output.largestRemnant,r.largestRemnant);onProgress(Math.round((i+1)/groups.length*100));
+  });
+  return output;
 }

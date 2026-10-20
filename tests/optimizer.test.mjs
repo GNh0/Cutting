@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {optimize,validateProject} from '../src/optimizer.js';
 import {referenceCases} from './reference-cases.mjs';
-const part=(id,w,h,qty=1,extra={})=>({id,w,h,qty,label:id,material:'A',enabled:true,grain:'none',rotate:true,edges:{},...extra});
+const part=(id,w,h,qty=1,extra={})=>({id,w,h,qty,label:id,thickness:18,manufacturer:'',lot:'',material:'A',enabled:true,grain:'none',rotate:true,edges:{},...extra});
 const project=(parts,stocks,settings={})=>({version:1,parts,stocks,settings:{kerf:3,trim:0,rotate:true,material:true,grain:false,single:false,quality:'balanced',priority:'area',...settings}});
 const near=(a,b)=>Math.abs(a-b)<1e-6;
 
@@ -45,7 +45,7 @@ test('kerf gap is honoured, with exact consumed remainder allowed',()=>{let r=so
 test('rotation can be disabled globally and on an individual part',()=>{const p=project([part('p',90,60)],[part('s',60,90)]);assert.equal(solve(p).placed,1);p.settings.rotate=false;assert.equal(solve(p).placed,0);p.settings.rotate=true;p.parts[0].rotate=false;assert.equal(solve(p).placed,0);});
 test('square parts still rotate when grain alignment requires it',()=>{const p=project([part('p',100,100,1,{grain:'y'})],[part('s',100,100,1,{grain:'x'})],{grain:true});const r=solve(p);assert.equal(r.placed,1);assert.equal(r.bins[0].parts[0].rotated,true);});
 test('grain restricts placement but unspecified grain is free',()=>{const p=project([part('p',90,60,1,{grain:'x'})],[part('s',60,90,1,{grain:'x'})],{grain:true});assert.equal(solve(p).placed,0);p.stocks[0].grain='none';assert.equal(solve(p).placed,1);});
-test('materials are matched and can be deliberately ignored',()=>{const p=project([part('p',50,50,1,{material:'B'})],[part('s',100,100)]);assert.equal(solve(p).placed,0);p.settings.material=false;assert.equal(solve(p).placed,1);});
+test('material matching is mandatory even when a legacy setting is false',()=>{const p=project([part('p',50,50,1,{material:'B'})],[part('s',100,100)]);assert.equal(solve(p).placed,0);p.settings.material=false;assert.equal(solve(p).placed,0);});
 test('stock quantity and one-sheet option are enforced',()=>{const p=project([part('p',100,100,3)],[part('s',100,100,2)]);assert.equal(solve(p).placed,2);p.settings.single=true;assert.equal(solve(p).placed,1);});
 test('trim removes all four edges and exact usable fits need no cuts',()=>{const p=project([part('p',90,70)],[part('s',100,80)],{trim:5});const r=solve(p);assert.equal(r.placed,1);assert.equal(r.cutCount,0);assert.equal(r.wasteArea,1700);p.parts[0].w=91;assert.equal(solve(p).placed,0);});
 test('disabled rows are skipped, disabled stocks are unavailable',()=>{const p=project([part('p',10,10),part('off',1000,1000,5,{enabled:false})],[part('s',30,30),part('offstock',100,100,1,{enabled:false})]);const r=solve(p);assert.equal(r.total,1);assert.equal(r.bins.length,1);});

@@ -1,0 +1,406 @@
+{
+  "uniquePhysicalScenarios": 100,
+  "overlapsWithPriorAndWithinRun": 0,
+  "priorConditionsCompared": 377783,
+  "complexity": {
+    "minTypes": 26,
+    "maxTypes": 46,
+    "minPieces": 59,
+    "maxPieces": 1000,
+    "minStockTypes": 9,
+    "materialGroups": [
+      3,
+      4
+    ],
+    "grainAlwaysEnabled": true
+  },
+  "scenarios": 100,
+  "scenarioIndices": [
+    7000000,
+    7000099
+  ],
+  "split": "complex-acceptance",
+  "threads": 12,
+  "maxStates": 512,
+  "hashes": {
+    "src/optimizer.js": "627ed0559ddd09c9f9e215ca645704275c4fb2bc0d49e05c01bbb1c82da77e3e",
+    "src/materials.js": "fd3e115f7c2e9436e4b6de9d40570f75341bdca21856d8b9d00a8f7d48a31bbd",
+    "src/cut-plan.js": "75bb1a31309e68b1d6f282ba9bec4a0d459d7f7cdda912bb8d2161d18947c29e",
+    "tools/complex-scenarios.mjs": "938006ca74864a37bd55909294ce8a25ed4098e8e6a0eaf17761a5f698b8b4b3"
+  },
+  "wallSeconds": 6.7312353,
+  "boards": 2211,
+  "improvedBoards": 1777,
+  "originalCuts": 33137,
+  "newCuts": 30028,
+  "originalCutLength": 22795123.300000004,
+  "newCutLength": 21943771.800000004,
+  "statesVisited": 236473,
+  "separatorCandidates": 644681,
+  "cappedBoards": 62,
+  "physicalAudits": 200,
+  "completedResults": 200,
+  "examples": [
+    {
+      "index": 7000033,
+      "parts": 15,
+      "before": 26,
+      "after": 23
+    },
+    {
+      "index": 7000033,
+      "parts": 13,
+      "before": 24,
+      "after": 23
+    },
+    {
+      "index": 7000033,
+      "parts": 7,
+      "before": 12,
+      "after": 11
+    },
+    {
+      "index": 7000033,
+      "parts": 5,
+      "before": 10,
+      "after": 9
+    },
+    {
+      "index": 7000033,
+      "parts": 5,
+      "before": 10,
+      "after": 9
+    },
+    {
+      "index": 7000091,
+      "parts": 8,
+      "before": 12,
+      "after": 10
+    },
+    {
+      "index": 7000091,
+      "parts": 8,
+      "before": 13,
+      "after": 12
+    },
+    {
+      "index": 7000091,
+      "parts": 8,
+      "before": 14,
+      "after": 13
+    },
+    {
+      "index": 7000091,
+      "parts": 8,
+      "before": 14,
+      "after": 13
+    },
+    {
+      "index": 7000091,
+      "parts": 6,
+      "before": 10,
+      "after": 10
+    },
+    {
+      "index": 7000025,
+      "parts": 8,
+      "before": 13,
+      "after": 11
+    },
+    {
+      "index": 7000025,
+      "parts": 4,
+      "before": 8,
+      "after": 7
+    },
+    {
+      "index": 7000025,
+      "parts": 5,
+      "before": 10,
+      "after": 9
+    },
+    {
+      "index": 7000025,
+      "parts": 11,
+      "before": 20,
+      "after": 20
+    },
+    {
+      "index": 7000025,
+      "parts": 4,
+      "before": 6,
+      "after": 6
+    },
+    {
+      "index": 7000016,
+      "parts": 5,
+      "before": 10,
+      "after": 9
+    },
+    {
+      "index": 7000016,
+      "parts": 4,
+      "before": 8,
+      "after": 6
+    },
+    {
+      "index": 7000016,
+      "parts": 6,
+      "before": 12,
+      "after": 10
+    },
+    {
+      "index": 7000016,
+      "parts": 10,
+      "before": 17,
+      "after": 15
+    },
+    {
+      "index": 7000016,
+      "parts": 7,
+      "before": 14,
+      "after": 12
+    },
+    {
+      "index": 7000000,
+      "parts": 34,
+      "before": 48,
+      "after": 44
+    },
+    {
+      "index": 7000000,
+      "parts": 32,
+      "before": 46,
+      "after": 42
+    },
+    {
+      "index": 7000000,
+      "parts": 23,
+      "before": 28,
+      "after": 26
+    },
+    {
+      "index": 7000000,
+      "parts": 23,
+      "before": 31,
+      "after": 29
+    },
+    {
+      "index": 7000000,
+      "parts": 29,
+      "before": 43,
+      "after": 36
+    },
+    {
+      "index": 7000083,
+      "parts": 12,
+      "before": 20,
+      "after": 19
+    },
+    {
+      "index": 7000083,
+      "parts": 5,
+      "before": 9,
+      "after": 8
+    },
+    {
+      "index": 7000083,
+      "parts": 5,
+      "before": 10,
+      "after": 9
+    },
+    {
+      "index": 7000083,
+      "parts": 7,
+      "before": 13,
+      "after": 12
+    },
+    {
+      "index": 7000083,
+      "parts": 4,
+      "before": 7,
+      "after": 6
+    },
+    {
+      "index": 7000075,
+      "parts": 10,
+      "before": 20,
+      "after": 18
+    },
+    {
+      "index": 7000075,
+      "parts": 18,
+      "before": 29,
+      "after": 26
+    },
+    {
+      "index": 7000075,
+      "parts": 6,
+      "before": 11,
+      "after": 11
+    },
+    {
+      "index": 7000075,
+      "parts": 9,
+      "before": 15,
+      "after": 15
+    },
+    {
+      "index": 7000075,
+      "parts": 18,
+      "before": 29,
+      "after": 27
+    },
+    {
+      "index": 7000008,
+      "parts": 4,
+      "before": 8,
+      "after": 7
+    },
+    {
+      "index": 7000008,
+      "parts": 4,
+      "before": 8,
+      "after": 7
+    },
+    {
+      "index": 7000008,
+      "parts": 6,
+      "before": 12,
+      "after": 10
+    },
+    {
+      "index": 7000008,
+      "parts": 8,
+      "before": 16,
+      "after": 14
+    },
+    {
+      "index": 7000008,
+      "parts": 9,
+      "before": 13,
+      "after": 13
+    },
+    {
+      "index": 7000041,
+      "parts": 24,
+      "before": 30,
+      "after": 28
+    },
+    {
+      "index": 7000041,
+      "parts": 13,
+      "before": 21,
+      "after": 17
+    },
+    {
+      "index": 7000041,
+      "parts": 10,
+      "before": 20,
+      "after": 16
+    },
+    {
+      "index": 7000041,
+      "parts": 10,
+      "before": 20,
+      "after": 16
+    },
+    {
+      "index": 7000041,
+      "parts": 10,
+      "before": 20,
+      "after": 16
+    },
+    {
+      "index": 7000058,
+      "parts": 17,
+      "before": 31,
+      "after": 28
+    },
+    {
+      "index": 7000058,
+      "parts": 14,
+      "before": 26,
+      "after": 26
+    },
+    {
+      "index": 7000058,
+      "parts": 12,
+      "before": 19,
+      "after": 17
+    },
+    {
+      "index": 7000059,
+      "parts": 3,
+      "before": 6,
+      "after": 5
+    },
+    {
+      "index": 7000059,
+      "parts": 7,
+      "before": 13,
+      "after": 11
+    },
+    {
+      "index": 7000066,
+      "parts": 10,
+      "before": 18,
+      "after": 15
+    },
+    {
+      "index": 7000066,
+      "parts": 4,
+      "before": 6,
+      "after": 6
+    },
+    {
+      "index": 7000066,
+      "parts": 4,
+      "before": 6,
+      "after": 6
+    },
+    {
+      "index": 7000066,
+      "parts": 4,
+      "before": 8,
+      "after": 8
+    },
+    {
+      "index": 7000066,
+      "parts": 6,
+      "before": 9,
+      "after": 8
+    },
+    {
+      "index": 7000050,
+      "parts": 12,
+      "before": 21,
+      "after": 17
+    },
+    {
+      "index": 7000050,
+      "parts": 12,
+      "before": 21,
+      "after": 17
+    },
+    {
+      "index": 7000050,
+      "parts": 12,
+      "before": 21,
+      "after": 17
+    },
+    {
+      "index": 7000050,
+      "parts": 12,
+      "before": 21,
+      "after": 17
+    },
+    {
+      "index": 7000050,
+      "parts": 12,
+      "before": 21,
+      "after": 17
+    }
+  ],
+  "scope": "Fixed-layout guillotine reconstruction, preserving original reusable residual score. Cut candidates are partial separator choices, not independent scenarios."
+}

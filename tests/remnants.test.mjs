@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {groupRemnants,carryRemnantStock} from '../src/remnants.js';
 
-const remnant=(extra={})=>({w:500,h:300,material:'합판',grain:'x',reusable:true,sheet:0,index:0,...extra});
-const stock=(extra={})=>({id:'stock',label:'보유 잔재',w:500,h:300,material:'합판',grain:'x',enabled:true,qty:3,...extra});
+const remnant=(extra={})=>({w:500,h:300,thickness:18,manufacturer:'',lot:'',material:'합판',grain:'x',reusable:true,sheet:0,index:0,...extra});
+const stock=(extra={})=>({id:'stock',label:'보유 잔재',w:500,h:300,thickness:18,manufacturer:'',lot:'',material:'합판',grain:'x',enabled:true,qty:3,...extra});
 const createRow=(label,w,h,qty,extra)=>({id:crypto.randomUUID(),label,w,h,qty,enabled:true,...extra});
 
 test('equal remnants accumulate quantity and area while keeping each source',()=>{

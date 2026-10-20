@@ -9,7 +9,9 @@ const count=Number(process.argv[2]||50000),split=process.argv[3]||'train';
 if(!Number.isInteger(count)||count<1||count>1000000||!['train','holdout','acceptance'].includes(split))throw new Error('Usage: node tools/benchmark.mjs [1..1000000] [train|holdout|acceptance]');
 const threads=Math.min(4,Math.max(1,os.availableParallelism()-1),count),start=performance.now(),workers=[],states=new Map();
 const source=await fs.readFile(new URL('../src/optimizer.js',import.meta.url));const engineSha256=createHash('sha256').update(source).digest('hex');
-await fs.mkdir('research/benchmarks',{recursive:true});const snapshot=path.resolve(`research/benchmarks/engine-${engineSha256}.mjs`);await fs.writeFile(snapshot,source);
+await fs.mkdir('research/benchmarks',{recursive:true});const snapshot=path.resolve(`research/benchmarks/engine-${engineSha256}.mjs`);let snapshotSource=source.toString();
+for(const name of ['materials','cut-plan']){const dependency=await fs.readFile(new URL(`../src/${name}.js`,import.meta.url)),hash=createHash('sha256').update(dependency).digest('hex'),filename=`${name}-${hash}.mjs`;await fs.writeFile(path.join(path.dirname(snapshot),filename),dependency);snapshotSource=snapshotSource.replace(`'./${name}.js'`,`'./${filename}'`);}
+await fs.writeFile(snapshot,snapshotSource);
 const engineURL=pathToFileURL(snapshot).href;
 console.log(JSON.stringify({type:'start',pid:process.pid,count,split,threads,profiles:4,packingCandidates:count*240,engineSha256}));
 let timer;

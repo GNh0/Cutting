@@ -34,12 +34,15 @@
           <div class="heading-actions"><button class="button" id="load-project"><span data-icon="upload"></span><span>불러오기</span></button><button class="button" id="save-project"><span data-icon="save"></span><span>프로젝트 저장</span></button></div>
         </section>
         <section class="project-bar" aria-label="현재 프로젝트">
-          <span class="project-symbol" data-icon="file"></span><input id="project-name" aria-label="프로젝트 이름" maxlength="100" value="책장 제작 프로젝트">
+          <span class="project-symbol" data-icon="file"></span><input id="project-name" aria-label="프로젝트 이름" maxlength="100" value="새 프로젝트">
           <span id="save-status" class="save-status" role="status">자동 저장 준비</span>
           <span class="project-spacer"></span><label class="unit-control">단위 <select id="unit" aria-label="치수 단위"><option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option><option value="in">inch</option></select></label>
           <button class="button quiet compact" id="demo-button" title="예제 데이터 불러오기" aria-label="예제 데이터 불러오기" data-icon="sparkles"></button>
           <button class="button quiet compact" id="new-project" title="새 프로젝트" aria-label="새 프로젝트" data-icon="plus"></button>
+          <div class="project-calculation"><button class="button primary optimize-button" id="optimize"><span data-icon="sparkles"></span><span id="optimize-label">최적 배치 계산</span><kbd>Ctrl ↵</kbd></button>
+            <button class="text-button cancel-button" id="cancel" hidden>계산 취소</button><div class="progress" id="progress" hidden><div></div></div></div>
         </section>
+
         <div class="workspace-grid">
           <div class="input-column">
             <section class="card input-card">
@@ -53,13 +56,11 @@
               <div class="card-heading"><h2><span data-icon="sliders"></span>최적화 설정</h2><span class="small-badge">내 작업에 맞게</span></div>
               <div class="settings-numbers"><label>톱날 두께 <span class="tooltip" title="절단할 때 톱날이 소모하는 폭입니다.">ⓘ</span><div class="number-with-unit"><input type="number" id="kerf" min="0" step="any" aria-label="톱날 두께"><span class="unit-label">mm</span></div></label><label>가장자리 여유 <span class="tooltip" title="원판의 네 가장자리에서 사용할 수 없는 영역입니다. 정재단 작업은 절단 순서에서 제외됩니다.">ⓘ</span><div class="number-with-unit"><input type="number" id="trim" min="0" step="any" aria-label="가장자리 여유"><span class="unit-label">mm</span></div></label></div>
               <label class="switch-row"><span><strong>부재 회전 허용</strong><small>공간에 맞춰 90° 회전</small></span><input type="checkbox" role="switch" id="rotate"><span class="switch"></span></label>
-              <label class="switch-row"><span><strong>재질별로 구분</strong><small>같은 재질의 원판에만 배치</small></span><input type="checkbox" role="switch" id="material"><span class="switch"></span></label>
+              <p class="matching-rule">두께·재질은 필수입니다. 두께·재질·제조사·LOT이 모두 같은 그룹에만 배치하며, 미입력 값은 미입력 값끼리만 일치합니다.</p>
               <label class="switch-row"><span><strong>결 방향 유지</strong><small>부재와 원판의 결 방향 일치</small></span><input type="checkbox" role="switch" id="grain"><span class="switch"></span></label>
-              <details id="advanced-settings"><summary>고급 설정 <span data-icon="chevron"></span></summary><div class="advanced-inner"><label class="switch-row"><span><strong>원판 한 장만 사용</strong><small>선택된 원판 한 장 내에서만 배치</small></span><input type="checkbox" role="switch" id="single"><span class="switch"></span></label><label class="select-row">최적화 우선순위<select id="priority" aria-label="최적화 우선순위"><option value="area">원판 최소 · 재사용 면적 우선</option><option value="remnant">원판 최소 · 큰 잔재 우선</option><option value="cuts">절단 횟수 최소</option></select></label><label class="select-row">탐색 수준<select id="quality" aria-label="탐색 수준"><option value="quick">빠르게 · 30개 후보</option><option value="balanced">균형 · 120개 후보</option><option value="thorough">정밀 · 240개 후보</option></select></label><p class="field-note">엣지밴딩은 각 부재의 상세에서 표시합니다. 치수 차감 없이 밴딩 위치와 필요 길이를 계산합니다.</p></div></details>
+              <details id="advanced-settings"><summary>고급 설정 <span data-icon="chevron"></span></summary><div class="advanced-inner"><label class="switch-row"><span><strong>그룹당 원판 한 장만 사용</strong><small>각 그룹에서 한 장까지만 배치</small></span><input type="checkbox" role="switch" id="single"><span class="switch"></span></label><label class="select-row">최적화 우선순위<select id="priority" aria-label="최적화 우선순위"><option value="area">원판 최소 · 재사용 면적 우선</option><option value="remnant">원판 최소 · 큰 잔재 우선</option><option value="cuts">절단 횟수 최소</option></select></label><label class="select-row">탐색 수준<select id="quality" aria-label="탐색 수준"><option value="quick">빠르게 · 그룹당 30개 후보</option><option value="balanced">균형 · 그룹당 120개 후보</option><option value="thorough">정밀 · 그룹당 240개 후보</option></select></label><p class="field-note">엣지밴딩은 각 부재의 상세에서 표시합니다. 치수 차감 없이 밴딩 위치와 필요 길이를 계산합니다.</p></div></details>
               <div class="remnant-setting"><label for="minRemnant">재사용 잔재 최소 폭 <span class="tooltip" title="잔재의 가로와 세로가 모두 이 값 이상일 때 재사용 가능으로 집계합니다.">ⓘ</span></label><div class="number-with-unit"><input type="number" id="minRemnant" min="0" step="any" aria-label="재사용 잔재 최소 폭"><span class="unit-label">mm</span></div></div>
-              <button class="button primary optimize-button" id="optimize"><span data-icon="sparkles"></span><span id="optimize-label">최적 배치 계산</span><kbd>Ctrl ↵</kbd></button>
-              <button class="text-button cancel-button" id="cancel" hidden>계산 취소</button><div class="progress" id="progress" hidden><div></div></div>
-              <p class="calculation-note"><span data-icon="shield"></span>입력한 치수는 서버로 전송되지 않습니다.</p>
+
             </section>
           </div>
           <section class="result-column" aria-label="최적화 결과">

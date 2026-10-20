@@ -1,3 +1,4 @@
+import {materialKey} from '../src/materials.js';
 const close=(a,b)=>Math.abs(a-b)<1e-5;
 const require=(condition,message)=>{if(!condition)throw new Error(message);};
 export function auditResult(result,project){
@@ -17,7 +18,7 @@ export function auditResult(result,project){
     for(const p of bin.parts){
       require(!instances.has(p.instance),'Duplicate part');instances.add(p.instance);used+=p.w*p.h;
       const i=fragments.findIndex(f=>close(f.x,p.x)&&close(f.y,p.y)&&close(f.w,p.w)&&close(f.h,p.h));require(i>=0&&!pieceCells.has(i),'Part is not a unique physical final fragment');pieceCells.add(i);
-      if(project.settings.material)require(p.material.trim()===bin.stock.material.trim(),'Material mismatch');
+      require(materialKey(p)===materialKey(bin.stock),'Material group mismatch');
       if(project.settings.grain&&p.grain!=='none'&&bin.stock.grain!=='none')require((p.rotated?(p.grain==='x'?'y':'x'):p.grain)===bin.stock.grain,'Grain mismatch');
     }
     const area=fragments.reduce((n,f)=>n+f.w*f.h,0)+bin.cuts.reduce((n,c)=>n+c.length*c.kerf,0);require(close(area,(bin.stock.w-2*trim)*(bin.stock.h-2*trim)),'Area conservation failed');

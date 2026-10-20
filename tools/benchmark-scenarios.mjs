@@ -4,7 +4,7 @@ export function scenario(index,split='train'){
   let seed=((index+1)*2654435761+(split==='acceptance'?355190465:split==='holdout'?97173211:127807))>>>0;
   const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
   const int=(a,b)=>a+Math.floor(random()*(b-a+1));
-  const make=(id,w,h,qty,extra={})=>({id,label:id,w,h,qty,material:'A',grain:'none',rotate:true,enabled:true,edges:{},...extra});
+  const make=(id,w,h,qty,extra={})=>({id,label:id,w,h,qty,thickness:18,manufacturer:'',lot:'',material:'A',grain:'none',rotate:true,enabled:true,edges:{},...extra});
   const family=index%families.length;let parts=[],stocks=[],settings={...BASE};
   const kerfs=[0,1,2,3,4,5];settings.kerf=kerfs[int(0,kerfs.length-1)];
   if(family===0){const w=int(4,16)*25,h=int(3,14)*25,cols=int(2,5),rows=int(2,5);parts=[make('p0',w,h,int(2,rows*cols*2))];stocks=[make('s0',w*cols+settings.kerf*(cols-1),h*rows+settings.kerf*(rows-1),3)];}

@@ -1,4 +1,4 @@
-const row=(id,w,h,qty,extra={})=>({id,w,h,qty,label:id,material:'',grain:'none',enabled:true,rotate:true,edges:{},...extra});
+const row=(id,w,h,qty,extra={})=>({id,w,h,qty,label:id,thickness:18,manufacturer:'',lot:'',material:'A',grain:'none',enabled:true,rotate:true,edges:{},...extra});
 const p=(id,parts,stocks,extra={})=>({id,version:1,name:id,unit:'mm',parts,stocks,settings:{kerf:0,trim:0,rotate:true,material:false,grain:false,single:false,quality:'thorough',priority:'area',...extra}});
 export const referenceCases=[
   p('01_exact_grid',[row('square',500,500,4)],[row('stock',1000,1000,4)]),
