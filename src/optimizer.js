@@ -1,5 +1,5 @@
 // Independent guillotine packing engine. All lengths are millimetres.
-import {materialKey,materialInfo,materialGroups} from './materials.js';
+import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js';
 import {sharedCutPlan,orderCutPlan} from './cut-plan.js';
 const EPS = 1e-7;
 export const LIMIT = 1000;
@@ -60,7 +60,7 @@ function split(f,o,k,vertical) {
   }
   return {free,cuts};
 }
-const matches=(p,stock)=>materialKey(p)===materialKey(stock);
+const matches=materialMatches;
 function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null) {
   if(!matches(p,bin.stock,s)) return null;
   let best=null;
@@ -87,22 +87,29 @@ function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null
 const nearDimension=(a,b)=>Math.abs(a-b)<EPS;
 function run(pieces,stocks,s,variant,strategy=null,scoringMode=null) {
   const bins=[],unplaced=[],remaining=stocks.map(r=>r.qty);
+  const reserveOptions=variant%3===0&&new Set(pieces.map(materialKey)).size>1;
+  const pending=new Map(),eligible=new Map();
+  if(reserveOptions)for(const p of pieces){pending.set(p.id,(pending.get(p.id)||0)+1);if(!eligible.has(p.id))eligible.set(p.id,stocks.flatMap((stock,i)=>matches(p,stock)&&orientations(p,stock,s).some(o=>o.w<=stock.w-2*s.trim+EPS&&o.h<=stock.h-2*s.trim+EPS)?[i]:[]));}
   for(const p of pieces) {
+    if(reserveOptions)pending.set(p.id,pending.get(p.id)-1);
+    const pressure=i=>{let value=0;for(const [id,choices]of eligible)if(id!==p.id&&pending.get(id)>0&&choices.includes(i))value+=pending.get(id)/Math.max(1,choices.reduce((n,j)=>n+remaining[j],0));return value;};
     let chosen=null;
     for(const bin of bins) {
       const c=candidate(p,bin,s,variant,strategy,scoringMode);
       if(c&&(!chosen||c.rank<chosen.c.rank)) chosen={bin,c};
     }
-    if(!chosen&&(!s.single||bins.length===0)) {
+    if(!chosen) {
       for(let i=0;i<stocks.length;i++) {
         const stock=stocks[i]; if(remaining[i]<=0) continue;
+        if(s.single&&bins.some(b=>materialKey(b.stock)===materialKey(stock)))continue;
         const w=stock.w-2*s.trim,h=stock.h-2*s.trim;
         if(w<=0||h<=0) continue;
         const bin={stock,stockIndex:i,free:[{x:s.trim,y:s.trim,w,h}],parts:[],cuts:[]};
         const c=candidate(p,bin,s,variant,strategy,scoringMode);
         const area=stock.w*stock.h,previous=chosen?chosen.bin.stock.w*chosen.bin.stock.h:0;
         const preferLarge=Math.floor(variant/3)%2===1;
-        if(c&&(!chosen||(preferLarge?area>previous:area<previous)||(area===previous&&c.rank<chosen.c.rank))) chosen={bin,c,fresh:true};
+        const risk=reserveOptions?pressure(i):0;
+        if(c&&(!chosen||risk<chosen.risk-EPS||Math.abs(risk-chosen.risk)<=EPS&&((preferLarge?area>previous:area<previous)||(area===previous&&c.rank<chosen.c.rank)))) chosen={bin,c,fresh:true,risk};
       }
     }
     if(!chosen) {unplaced.push(p);continue;}
@@ -153,6 +160,7 @@ export function optimize(project,onProgress=()=>{},options={}) {
   for(const p of pieces)for(const size of new Set([p.w,p.h]))frequency.set(size,(frequency.get(size)||0)+1);
   const stripSizes=[...frequency].sort((a,b)=>b[1]-a[1]||b[0]-a[0]).map(([size])=>size).slice(0,12);
   const generalCount=Math.floor(iterations/2);
+  const restriction=new Map(project.parts.filter(p=>p.enabled!==false).map(p=>[p.id,{specified:Number(Boolean(p.manufacturer.trim()))+Number(Boolean(p.lot.trim())),choices:stocks.filter(s=>matches(p,s)).length}]));
   let best=null;
   for(let v=0;v<iterations;v++) {
     const isCurrent=family==='current';
@@ -161,6 +169,9 @@ export function optimize(project,onProgress=()=>{},options={}) {
     const strategy=family==='greedy'?null:isCurrent?(v>=generalCount?{size:stripSizes[Math.floor((v-generalCount)/2)%stripSizes.length],axis:(v-generalCount)%2?'y':'x'}:null):slot>=2?{size:stripSizes[cycle%stripSizes.length],axis:slot===2?'x':'y'}:null;
     const scoringMode=isCurrent||family==='greedy'?null:family==='guided'?Math.floor(cycle/4)%5:strategy?Math.floor(cycle/stripSizes.length)%3:slot;
     const sorted=[...pieces].sort((a,b)=>{
+      const ar=restriction.get(a.id),br=restriction.get(b.id);
+      if(ar.specified!==br.specified)return br.specified-ar.specified;
+      if(ar.choices!==br.choices)return ar.choices-br.choices;
       if(strategy){const group=p=>nearDimension(p.w,strategy.size)||nearDimension(p.h,strategy.size);const ga=group(a),gb=group(b);if(ga!==gb)return gb?1:-1;if(ga&&gb)return Math.max(b.w,b.h)-Math.max(a.w,a.h)||b.w*b.h-a.w*a.h;return Math.max(b.w,b.h)-Math.max(a.w,a.h)||b.w*b.h-a.w*a.h;}
       const key=p=>mode===0?p.w*p.h:mode===1?Math.max(p.w,p.h):mode===2?Math.min(p.w,p.h):mode===3?p.w+p.h:mode===4?p.w:mode===5?p.h:mode===6?Math.abs(p.w-p.h):p.w*p.h/Math.max(p.w,p.h)**.5;
       // Deterministic perturbations explore orderings without losing reproducibility.
@@ -181,17 +192,28 @@ export function optimizeCutPlans(result,s){
 }
 
 function optimizeGroups(project,onProgress,options){
-  const groups=materialGroups(project.parts.filter(r=>r.enabled!==false));
+  // Part requirements can overlap when manufacturer or LOT is omitted. Search
+  // connected requirements together so the same inventory is never counted twice.
+  const requests=materialGroups(project.parts.filter(r=>r.enabled!==false)),stocks=project.stocks.filter(s=>s.enabled!==false);
+  const parents=requests.map((_,i)=>i),owners=new Map(),find=i=>parents[i]===i?i:(parents[i]=find(parents[i]));
+  const available=requests.map(g=>stocks.filter(s=>matches(g,s)));
+  available.forEach((list,i)=>list.forEach(s=>{if(owners.has(s.id))parents[find(i)]=find(owners.get(s.id));else owners.set(s.id,i);}));
+  const components=new Map();requests.forEach((g,i)=>{const key=find(i);if(!components.has(key))components.set(key,{parts:[],stockIds:new Set()});const c=components.get(key);c.parts.push(...g.rows.map(x=>x.row));available[i].forEach(s=>c.stockIds.add(s.id));});
+  const groups=[...components.values()];
   const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family||'hybrid'};
   groups.forEach((g,i)=>{
-    const parts=g.rows.map(x=>x.row),stocks=project.stocks.filter(s=>s.enabled!==false&&materialKey(s)===g.key);
-    const layout=stocks.length?optimize({...project,parts,stocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
+    const parts=g.parts,matchingStocks=stocks.filter(s=>g.stockIds.has(s.id));
+    const layout=matchingStocks.length?optimize({...project,parts,stocks:matchingStocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
     const r=options.refineCuts===false?layout:optimizeCutPlans(layout,project.settings);
     const offset=output.bins.length;
-    output.groups.push({key:g.key,...materialInfo(g),sheets:r.bins.map((_,j)=>offset+j),placed:r.placed,total:r.total,unplaced:r.unplaced.length,stockArea:r.stockArea,usedArea:r.usedArea});
     output.bins.push(...r.bins);output.unplaced.push(...r.unplaced);output.remnants.push(...r.remnants.map(x=>({...x,sheet:x.sheet+offset})));
     for(const key of ['usedArea','stockArea','wasteArea','cutLength','cutCount','reusableArea','placed','total','iterations'])output[key]+=r[key];
     output.largestRemnant=Math.max(output.largestRemnant,r.largestRemnant);onProgress(Math.round((i+1)/groups.length*100));
   });
+  // Display the actual stock identities, including the selected LOT for flexible
+  // parts. Unplaced requests retain their own requirements and do not invent a LOT.
+  const displayed=new Map(),getGroup=(r,requestOnly=false)=>{const key=materialKey(r);if(!displayed.has(key))displayed.set(key,{key,...materialInfo(r),sheets:[],placed:0,total:0,unplaced:0,stockArea:0,usedArea:0,requestOnly});return displayed.get(key);};
+  output.bins.forEach((b,i)=>{const g=getGroup(b.stock);g.requestOnly=false;g.sheets.push(i);g.placed+=b.parts.length;g.total+=b.parts.length;g.stockArea+=b.stock.w*b.stock.h;g.usedArea+=b.parts.reduce((n,p)=>n+p.w*p.h,0);});
+  output.unplaced.forEach(p=>{const g=getGroup(p,true);g.unplaced++;g.total++;});output.groups=[...displayed.values()];
   return output;
 }
