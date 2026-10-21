@@ -1,8 +1,8 @@
-import {validateProject} from './optimizer.js?v=28666b9e0a48';
-import {csv,importRows,readProject} from './io.js?v=28666b9e0a48';
-import {dimensionGeometry,rotateBinForView} from './diagram.js?v=28666b9e0a48';
-import {groupRemnants,carryRemnantStock} from './remnants.js?v=28666b9e0a48';
-import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=28666b9e0a48';
+import {validateProject} from './optimizer.js?v=0335af4f5072';
+import {csv,importRows,readProject} from './io.js?v=0335af4f5072';
+import {dimensionGeometry,rotateBinForView} from './diagram.js?v=0335af4f5072';
+import {groupRemnants,carryRemnantStock} from './remnants.js?v=0335af4f5072';
+import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=0335af4f5072';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -180,7 +180,7 @@ function calculate(){
   const errors=validateProject(project);if(errors.length){notify(errors.slice(0,8).join('\n'),true);return;}
   cancelCalculation(false);setBusy(true);const snapshot=structuredClone(project);
   try{
-    worker=new Worker(new URL('./worker.js?v=28666b9e0a48',import.meta.url),{type:'module'});
+    worker=new Worker(new URL('./worker.js?v=0335af4f5072',import.meta.url),{type:'module'});
     worker.onmessage=({data})=>{
       if(data.type==='progress'){$('#progress>div').style.width=data.percent+'%';return;}
       if(data.type==='done'){result=data.result;resultProject=snapshot;dirty=false;selectedSheet=0;selectedPart=null;selectedCut=null;cancelCalculation(false);renderResults();persist();notify(result.unplaced.length?`${result.placed}개 배치 · ${result.unplaced.length}개 미배치`:`${result.total}개 부재를 ${result.bins.length}장에 배치했습니다.`);}
@@ -275,15 +275,29 @@ $('#result-body').addEventListener('click',e=>{
 });
 $('#result-body').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-part],[data-cut]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
 function clearHover(svg){svg?.querySelector('.hover-dimensions')?.remove();svg?.classList.remove('has-hover');svg?.querySelectorAll('.shape-hover').forEach(g=>g.classList.remove('shape-hover'));}
-function showHover(target){
-  const svg=target.closest('svg');if(!svg)return;clearHover(svg);target.classList.add('shape-hover');svg.classList.add('has-hover');
+function showHover(target,event){
+  const svg=target.closest('svg');if(!svg)return;
+  if(!target.classList.contains('shape-hover')){clearHover(svg);target.classList.add('shape-hover');svg.classList.add('has-hover');}
   const d=target.dataset,s=svg.dataset,r={x:Number(d.rx),y:Number(d.ry),w:Number(d.rw),h:Number(d.rh)};
-  const g=dimensionGeometry({x:Number(s.sheetX),y:Number(s.sheetY),w:Number(s.sheetW),h:Number(s.sheetH)},r),a=g.horizontal,b=g.vertical;
-  const overlay=document.createElementNS('http://www.w3.org/2000/svg','g');overlay.setAttribute('class','hover-dimensions');overlay.setAttribute('pointer-events','none');overlay.setAttribute('aria-label',`${d.region!==undefined?'남는 영역':'부재'} 가로 ${dim(Number(d.mmW))}, 세로 ${dim(Number(d.mmH))} ${unit()}`);
-  overlay.innerHTML=`<g stroke="#df725e" stroke-width="1.2" fill="none"><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/><path d="M${a.x1} ${a.y}H${a.x2}M${a.x1} ${a.y-5}v10M${a.x2} ${a.y-5}v10M${b.x} ${b.y1}V${b.y2}M${b.x-5} ${b.y1}h10M${b.x-5} ${b.y2}h10"/></g><g fill="#cf604b" font-size="12"><text x="${a.labelX}" y="${a.labelY}" text-anchor="middle">${dim(Number(d.mmW))} ${unit()}</text><text transform="translate(${b.labelX},${b.labelY}) rotate(90)" text-anchor="middle">${dim(Number(d.mmH))} ${unit()}</text></g>`;
-  svg.append(overlay);
+  const widthText=`${dim(Number(d.mmW))} ${unit()}`,heightText=`${dim(Number(d.mmH))} ${unit()}`;
+  let overlay=svg.querySelector('.hover-dimensions');
+  const options={horizontalLabelWidth:Math.max(28,widthText.length*7.5),verticalLabelWidth:Math.max(28,heightText.length*7.5),previous:{horizontal:overlay?.dataset.horizontalSide,vertical:overlay?.dataset.verticalSide}};
+  const matrix=svg.getScreenCTM();
+  if(matrix){
+    const inverse=matrix.inverse(),point=(x,y)=>new DOMPoint(x,y).matrixTransform(inverse),rect=svg.getBoundingClientRect(),clip=svg.closest('.drawing-viewport')?.getBoundingClientRect()||rect;
+    const left=Math.max(0,rect.left,clip.left),top=Math.max(0,rect.top,clip.top),right=Math.min(window.innerWidth,rect.right,clip.right),bottom=Math.min(window.innerHeight,rect.bottom,clip.bottom);
+    if(right>left&&bottom>top){const a=point(left,top),b=point(right,bottom);options.bounds={x:a.x,y:a.y,w:b.x-a.x,h:b.y-a.y};}
+    if(Number.isFinite(event?.clientX)&&Number.isFinite(event?.clientY))options.pointer=point(event.clientX,event.clientY);
+  }
+  const g=dimensionGeometry({x:Number(s.sheetX),y:Number(s.sheetY),w:Number(s.sheetW),h:Number(s.sheetH)},r,options),a=g.horizontal,b=g.vertical,key=JSON.stringify(g);
+  if(overlay?.dataset.geometry===key)return;
+  if(!overlay){overlay=document.createElementNS('http://www.w3.org/2000/svg','g');overlay.setAttribute('class','hover-dimensions');overlay.setAttribute('pointer-events','none');svg.append(overlay);}
+  overlay.dataset.geometry=key;overlay.dataset.horizontalSide=a.side;overlay.dataset.verticalSide=b.side;
+  overlay.setAttribute('aria-label',`${d.region!==undefined?'남는 영역':'부재'} 가로 ${widthText}, 세로 ${heightText}`);
+  overlay.innerHTML=`<g stroke="#df725e" stroke-width="1.2" fill="none"><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/><path d="M${a.x1} ${a.y}H${a.x2}M${a.x1} ${a.y-5}v10M${a.x2} ${a.y-5}v10M${b.x} ${b.y1}V${b.y2}M${b.x-5} ${b.y1}h10M${b.x-5} ${b.y2}h10"/></g><g fill="#cf604b" font-size="12" dominant-baseline="central"><text x="${a.labelX}" y="${a.labelY}" text-anchor="middle">${esc(widthText)}</text><text transform="translate(${b.labelX},${b.labelY}) rotate(${b.rotation})" text-anchor="middle">${esc(heightText)}</text></g>`;
 }
-$('#result-body').addEventListener('pointerover',e=>{const t=e.target.closest('.part-shape,.remnant-shape');if(t&&!t.contains(e.relatedTarget))showHover(t);});
+$('#result-body').addEventListener('pointerover',e=>{const t=e.target.closest('.part-shape,.remnant-shape');if(t&&!t.contains(e.relatedTarget))showHover(t,e);});
+$('#result-body').addEventListener('pointermove',e=>{if(e.buttons)return;const t=e.target.closest('.part-shape,.remnant-shape');if(t)showHover(t,e);});
 $('#result-body').addEventListener('pointerout',e=>{const t=e.target.closest('.part-shape,.remnant-shape');if(t&&!t.contains(e.relatedTarget))clearHover(t.closest('svg'));});
 $('#result-body').addEventListener('focusin',e=>{const t=e.target.closest('.part-shape,.remnant-shape');if(t)showHover(t);});
 $('#result-body').addEventListener('focusout',e=>{const t=e.target.closest('.part-shape,.remnant-shape');if(t)clearHover(t.closest('svg'));});
