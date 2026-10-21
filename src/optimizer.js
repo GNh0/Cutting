@@ -1,6 +1,6 @@
 // Independent guillotine packing engine. All lengths are millimetres.
-import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=61e5157091d1';
-import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=61e5157091d1';
+import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=28666b9e0a48';
+import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=28666b9e0a48';
 const EPS = 1e-7;
 export const LIMIT = 1000;
 export function validateProject(project,{allowIncomplete=false}={}) {
