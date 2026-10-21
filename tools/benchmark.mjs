@@ -13,9 +13,9 @@ await fs.mkdir('research/benchmarks',{recursive:true});const snapshot=path.resol
 const dependencyNames=new Map();
 for(const name of ['cut-order','materials','cut-plan']){
   let dependency=await fs.readFile(new URL(`../src/${name}.js`,import.meta.url),'utf8');
-  for(const [other,filename]of dependencyNames)dependency=dependency.replace(`'./${other}.js'`,`'./${filename}'`);
+  for(const [other,filename]of dependencyNames)dependency=dependency.replace(new RegExp(`'\\./${other}\\.js(?:\\?[^']*)?'`),`'./${filename}'`);
   const hash=createHash('sha256').update(dependency).digest('hex'),filename=`${name}-${hash}.mjs`;
-  await fs.writeFile(path.join(path.dirname(snapshot),filename),dependency);dependencyNames.set(name,filename);snapshotSource=snapshotSource.replace(`'./${name}.js'`,`'./${filename}'`);
+  await fs.writeFile(path.join(path.dirname(snapshot),filename),dependency);dependencyNames.set(name,filename);snapshotSource=snapshotSource.replace(new RegExp(`'\\./${name}\\.js(?:\\?[^']*)?'`),`'./${filename}'`);
 }
 await fs.writeFile(snapshot,snapshotSource);
 const engineURL=pathToFileURL(snapshot).href;

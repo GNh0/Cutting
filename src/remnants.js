@@ -1,5 +1,5 @@
-import {LIMIT} from './optimizer.js';
-import {materialKey,materialInfo} from './materials.js';
+import {LIMIT} from './optimizer.js?v=61e5157091d1';
+import {materialKey,materialInfo} from './materials.js?v=61e5157091d1';
 
 const key=r=>JSON.stringify([r.w,r.h,materialKey(r),r.grain]);
 

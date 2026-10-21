@@ -30,6 +30,7 @@ Node.js 22 이상 권장. 사이트 자체는 외부 패키지·CDN 의존성이
 npm start
 # http://127.0.0.1:4173
 npm test
+npm run version-assets # 배포 전 변경 파일의 공통 캐시 버전 갱신
 npm run check
 ```
 
