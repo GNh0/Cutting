@@ -1,0 +1,362 @@
+{
+  "baselineCommit": "87b5c982ada88935bee91baf95a26ab3809da290",
+  "hashes": {
+    "src/cut-plan.js": "a70af738d84cf0fbd16dd3100855f43cd5d9a6e3931e7661a68a1aacffc27edd",
+    "src/cut-order.js": "b2bdcca2d462b30c0dd05d10174304513da3ec60ca0aae78b96eff4a3f0473f8"
+  },
+  "project": {
+    "id": "06_mixed_bookshelf",
+    "version": 1,
+    "name": "06_mixed_bookshelf",
+    "unit": "mm",
+    "parts": [
+      {
+        "id": "00000000-0000-4000-8000-000000000000",
+        "w": 800,
+        "h": 300,
+        "qty": 2,
+        "label": "side",
+        "thickness": 18,
+        "manufacturer": "",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": true,
+        "rotate": true,
+        "edges": {}
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "w": 564,
+        "h": 300,
+        "qty": 4,
+        "label": "shelf",
+        "thickness": 18,
+        "manufacturer": "",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": true,
+        "rotate": true,
+        "edges": {}
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000002",
+        "w": 600,
+        "h": 320,
+        "qty": 2,
+        "label": "top_bottom",
+        "thickness": 18,
+        "manufacturer": "",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": true,
+        "rotate": true,
+        "edges": {}
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000003",
+        "w": 764,
+        "h": 564,
+        "qty": 1,
+        "label": "back",
+        "thickness": 18,
+        "manufacturer": "",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": true,
+        "rotate": true,
+        "edges": {}
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000004",
+        "w": 564,
+        "h": 80,
+        "qty": 2,
+        "label": "support",
+        "thickness": 18,
+        "manufacturer": "",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": true,
+        "rotate": true,
+        "edges": {}
+      }
+    ],
+    "stocks": [
+      {
+        "id": "stock",
+        "w": 2440,
+        "h": 1220,
+        "qty": 3,
+        "label": "stock",
+        "thickness": 18,
+        "manufacturer": "",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": false,
+        "rotate": true,
+        "edges": {}
+      },
+      {
+        "id": "active",
+        "w": 1610,
+        "h": 610,
+        "qty": 1,
+        "label": "원판 2",
+        "thickness": 18,
+        "manufacturer": "123123123",
+        "lot": "",
+        "material": "A",
+        "grain": "none",
+        "enabled": true,
+        "rotate": true,
+        "edges": {}
+      }
+    ],
+    "settings": {
+      "kerf": 3,
+      "trim": 0,
+      "rotate": true,
+      "material": false,
+      "grain": false,
+      "single": false,
+      "quality": "thorough",
+      "priority": "area",
+      "minRemnant": 100
+    }
+  },
+  "placed": [
+    {
+      "label": "support",
+      "x": 0,
+      "y": 0,
+      "w": 80,
+      "h": 564
+    },
+    {
+      "label": "support",
+      "x": 83,
+      "y": 0,
+      "w": 80,
+      "h": 564
+    },
+    {
+      "label": "side",
+      "x": 166,
+      "y": 0,
+      "w": 800,
+      "h": 300
+    },
+    {
+      "label": "side",
+      "x": 166,
+      "y": 303,
+      "w": 800,
+      "h": 300
+    },
+    {
+      "label": "shelf",
+      "x": 969,
+      "y": 303,
+      "w": 564,
+      "h": 300
+    },
+    {
+      "label": "shelf",
+      "x": 969,
+      "y": 0,
+      "w": 564,
+      "h": 300
+    }
+  ],
+  "baseline": {
+    "cuts": [
+      {
+        "axis": "x",
+        "x": 163,
+        "y": 0,
+        "length": 610,
+        "kerf": 3
+      },
+      {
+        "axis": "x",
+        "x": 1533,
+        "y": 0,
+        "length": 610,
+        "kerf": 3
+      },
+      {
+        "axis": "y",
+        "x": 0,
+        "y": 564,
+        "length": 163,
+        "kerf": 3
+      },
+      {
+        "axis": "y",
+        "x": 166,
+        "y": 603,
+        "length": 1367,
+        "kerf": 3
+      },
+      {
+        "axis": "x",
+        "x": 80,
+        "y": 0,
+        "length": 564,
+        "kerf": 3
+      },
+      {
+        "axis": "x",
+        "x": 966,
+        "y": 0,
+        "length": 603,
+        "kerf": 3
+      },
+      {
+        "axis": "y",
+        "x": 166,
+        "y": 300,
+        "length": 800,
+        "kerf": 3
+      },
+      {
+        "axis": "y",
+        "x": 969,
+        "y": 300,
+        "length": 564,
+        "kerf": 3
+      }
+    ],
+    "motion": {
+      "turns": 3,
+      "distance": 6717.3674901996455,
+      "cutLength": 5281,
+      "totalDistance": 11998.367490199646
+    }
+  },
+  "current": {
+    "cuts": [
+      {
+        "axis": "x",
+        "x": 163,
+        "y": 0,
+        "length": 610,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000004:2",
+          "00000000-0000-4000-8000-000000000000:1",
+          "00000000-0000-4000-8000-000000000000:2"
+        ]
+      },
+      {
+        "axis": "y",
+        "x": 0,
+        "y": 564,
+        "length": 163,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000004:1",
+          "00000000-0000-4000-8000-000000000004:2"
+        ]
+      },
+      {
+        "axis": "y",
+        "x": 166,
+        "y": 603,
+        "length": 1444,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000000:2",
+          "00000000-0000-4000-8000-000000000001:1"
+        ]
+      },
+      {
+        "axis": "x",
+        "x": 1533,
+        "y": 0,
+        "length": 603,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000001:1",
+          "00000000-0000-4000-8000-000000000001:2"
+        ]
+      },
+      {
+        "axis": "x",
+        "x": 966,
+        "y": 0,
+        "length": 603,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000000:1",
+          "00000000-0000-4000-8000-000000000000:2",
+          "00000000-0000-4000-8000-000000000001:1",
+          "00000000-0000-4000-8000-000000000001:2"
+        ]
+      },
+      {
+        "axis": "x",
+        "x": 80,
+        "y": 0,
+        "length": 564,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000004:1",
+          "00000000-0000-4000-8000-000000000004:2"
+        ]
+      },
+      {
+        "axis": "y",
+        "x": 166,
+        "y": 300,
+        "length": 800,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000000:1",
+          "00000000-0000-4000-8000-000000000000:2"
+        ]
+      },
+      {
+        "axis": "y",
+        "x": 969,
+        "y": 300,
+        "length": 564,
+        "kerf": 3,
+        "partInstance": null,
+        "partInstances": [
+          "00000000-0000-4000-8000-000000000001:1",
+          "00000000-0000-4000-8000-000000000001:2"
+        ]
+      }
+    ],
+    "motion": {
+      "turns": 3,
+      "distance": 3159.468894985684,
+      "cutLength": 5351,
+      "totalDistance": 8510.468894985685
+    }
+  },
+  "oracle": {
+    "count": 8,
+    "minimumCountTrees": 19,
+    "trees": 19,
+    "orders": 659,
+    "distance": 3159.468894985684,
+    "totalDistance": 8510.468894985685,
+    "cutLength": 5351,
+    "turns": 3
+  }
+}

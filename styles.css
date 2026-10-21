@@ -34,3 +34,5 @@ dialog{border:1px solid #dfe6d8;border-radius:13px;box-shadow:0 25px 100px #143c
 @media(max-width:710px){.input-tabs button{font-size:13px;padding:16px 12px}.project-bar input{font-size:14px}#input-table{max-height:450px}.input-group-heading th>span{max-width:270px}}
 
 .editor-table input[type=number]{appearance:textfield}.editor-table input::-webkit-outer-spin-button,.editor-table input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.sheet-cut-panel .cut-plan-note{font-size:12px;line-height:1.7;margin:5px 0;color:var(--green);font-variant-numeric:tabular-nums}
+.result-toolbar{flex-wrap:wrap;gap:5px 12px;padding-right:12px}.result-exports{display:flex;align-items:center;gap:6px;margin-left:auto;padding:8px 0}.result-exports .button{min-height:32px;padding:6px 10px;font-size:12px}.export-target{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#65756b;font-size:12px;margin-right:3px}.pdf-options{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.pdf-options .button{white-space:normal;text-align:left;line-height:1.6}

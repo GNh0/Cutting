@@ -6,6 +6,6 @@
   "scripts": {
     "start": "node tools/serve.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check src/app.js && node --check src/optimizer.js && node --check src/io.js && node --check src/worker.js && node --check src/materials.js && node --check src/remnants.js && node --check src/cut-plan.js && node --check src/diagram.js"
+    "check": "node --check src/app.js && node --check src/optimizer.js && node --check src/io.js && node --check src/worker.js && node --check src/materials.js && node --check src/remnants.js && node --check src/cut-plan.js && node --check src/cut-order.js && node --check src/diagram.js"
   }
 }

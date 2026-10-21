@@ -1,0 +1,61 @@
+{
+  "count": 1000,
+  "uniquePhysicalScenarios": 1000,
+  "scenarioIndices": [
+    11000000,
+    11000999
+  ],
+  "baselineCommit": "87b5c982ada88935bee91baf95a26ab3809da290",
+  "threads": 4,
+  "hashes": {
+    "src/optimizer.js": "2b8b9dacae2f535642e943a8327eab78ddae5fb585b6da60219a84cb8f00f896",
+    "src/materials.js": "230baa61220a0c8127f13e79cad1b2b7a9090ff2cb8f627bdae3419ce8e5e168",
+    "src/cut-plan.js": "a70af738d84cf0fbd16dd3100855f43cd5d9a6e3931e7661a68a1aacffc27edd",
+    "src/cut-order.js": "b2bdcca2d462b30c0dd05d10174304513da3ec60ca0aae78b96eff4a3f0473f8",
+    "tools/cut-motion-backtest.mjs": "57e28180a984b38a617b847e300da790ae4ba4bba1826963da8528876b355523",
+    "tools/complex-scenarios.mjs": "938006ca74864a37bd55909294ce8a25ed4098e8e6a0eaf17761a5f698b8b4b3"
+  },
+  "model": "Frozen layout; minimum cut count and preserved residual quality, then total positive-stroke travel (cut length plus approach distance), then direction changes. No stacking or workpiece handling time.",
+  "complexity": {
+    "minTypes": 24,
+    "maxTypes": 48,
+    "minPieces": 56,
+    "maxPieces": 1000,
+    "minStockTypes": 9,
+    "maxStockTypes": 12,
+    "partOptionalRequirements": true,
+    "grain": true,
+    "qualities": [
+      "quick",
+      "balanced",
+      "thorough"
+    ]
+  },
+  "physicalAudits": 3000,
+  "boards": 22004,
+  "largeQuantityCases": 300,
+  "thousandPartCases": 100,
+  "baselineCuts": 290154,
+  "newCuts": 290154,
+  "baselineCutLength": 212872580.40000018,
+  "newCutLength": 213118819.10000002,
+  "baselineTravel": 475118579.79018503,
+  "newTravel": 416606545.55334765,
+  "baselineApproach": 262245999.39018545,
+  "newApproach": 203487726.45334795,
+  "baselineTurns": 71334,
+  "newTurns": 159722,
+  "cutCountWins": 0,
+  "cutCountTies": 22004,
+  "comparableBoards": 21436,
+  "comparableMotionWins": 20365,
+  "comparableMotionTies": 1071,
+  "comparableMotionLosses": 0,
+  "newCutStageMs": {
+    "median": 134.4079999999958,
+    "p95": 2272.3557999999994,
+    "max": 4371.8099
+  },
+  "counterexamples": [],
+  "wallSeconds": 228.24769389999997
+}
