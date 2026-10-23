@@ -1,9 +1,9 @@
-import {validateProject} from './optimizer.js?v=69c50f2883e5';
-import {csv,importRows,readProject} from './io.js?v=69c50f2883e5';
-import {dimensionGeometry,rotateBinForView} from './diagram.js?v=69c50f2883e5';
-import {groupRemnants,carryRemnantStock} from './remnants.js?v=69c50f2883e5';
-import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=69c50f2883e5';
-import {CALCULATION_VERSIONS,resolveCalculationVersion} from './calculation-versions.js?v=69c50f2883e5';
+import {validateProject} from './optimizer.js?v=264c921d27a9';
+import {csv,importRows,readProject} from './io.js?v=264c921d27a9';
+import {dimensionGeometry,rotateBinForView} from './diagram.js?v=264c921d27a9';
+import {groupRemnants,carryRemnantStock} from './remnants.js?v=264c921d27a9';
+import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=264c921d27a9';
+import {CALCULATION_VERSIONS,resolveCalculationVersion} from './calculation-versions.js?v=264c921d27a9';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -195,7 +195,7 @@ function calculate(){
   const errors=validateProject(project);if(errors.length){notify(errors.slice(0,8).join('\n'),true);return;}
   cancelCalculation(false);setBusy(true);const snapshot=structuredClone(project);
   try{
-    worker=new Worker(new URL('./worker.js?v=69c50f2883e5',import.meta.url),{type:'module'});
+    worker=new Worker(new URL('./worker.js?v=264c921d27a9',import.meta.url),{type:'module'});
     worker.onmessage=({data})=>{
       if(data.type==='progress'){$('#progress>div').style.width=data.percent+'%';return;}
       if(data.type==='done'){result=data.result;resultProject=snapshot;dirty=false;selectedSheet=0;selectedPart=null;selectedCut=null;cancelCalculation(false);renderResults();persist();notify(result.unplaced.length?`${result.placed}개 배치 · ${result.unplaced.length}개 미배치`:`${result.total}개 부재를 ${result.bins.length}장에 배치했습니다.`);}

@@ -1,5 +1,5 @@
 // Rebuild a guillotine tree for fixed part positions; never join cuts across detached sheets.
-import {scheduleCutTree,cutMotion} from './cut-order.js?v=69c50f2883e5';
+import {scheduleCutTree,cutMotion} from './cut-order.js?v=264c921d27a9';
 const EPS=1e-7;
 const near=(a,b)=>Math.abs(a-b)<EPS;
 const reusable=(r,min)=>Math.min(r.w,r.h)>=min-EPS?r.w*r.h:0;

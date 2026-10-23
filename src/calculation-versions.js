@@ -1,4 +1,4 @@
-import {optimize} from './optimizer.js?v=69c50f2883e5';
+import {optimize} from './optimizer.js?v=264c921d27a9';
 
 export const CALCULATION_VERSIONS=Object.freeze([
   Object.freeze({id:'cutting-v1',name:'Cutting v1',description:'기존 Cutting 배치·절단 탐색을 그대로 사용합니다.',experimental:false}),

@@ -1,6 +1,6 @@
-import { validateProject, LIMIT } from './optimizer.js?v=69c50f2883e5';
-import {upgradeProject} from './materials.js?v=69c50f2883e5';
-import {resolveCalculationVersion} from './calculation-versions.js?v=69c50f2883e5';
+import { validateProject, LIMIT } from './optimizer.js?v=264c921d27a9';
+import {upgradeProject} from './materials.js?v=264c921d27a9';
+import {resolveCalculationVersion} from './calculation-versions.js?v=264c921d27a9';
 export function parseDelimited(text) {
   text=text.replace(/^\uFEFF/,'');
   const first=text.split(/\r?\n/)[0];

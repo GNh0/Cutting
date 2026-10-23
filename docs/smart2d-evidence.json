@@ -265,9 +265,11 @@
   ],
   "coverage": "Partial. Direction/level selection paths observed. Original packing-core formula and result equivalence not recovered. Full derived-image auto-analysis exceeded 330-second deadline. Focused Ghidra noanalysis decompilation followed exact selected entries; recovered function boundaries/types can be incomplete.",
   "verification": {
-    "testsPassed": 82,
+    "testsPassed": 87,
     "complexPhysicalAuditsPassed": 216,
     "browserVersionSelectionAndReloadChecked": true,
-    "benchmark": "version-benchmark.json"
+    "benchmark": "version-benchmark.json",
+    "materialLossAuditsPassed": 216,
+    "comparisonCriterion": "Material utilization, reusable remnants and non-reusable loss; runtime excluded"
   }
 }

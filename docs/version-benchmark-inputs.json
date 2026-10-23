@@ -650,7 +650,7 @@
   },
   {
     "id": "complex-23000001",
-    "signature": "c137aa05ad2f3c5d5ce3067654380c1cc878fefd41711b3d2129241036e67329",
+    "signature": "39240ba49ef5257253ace9aae9141dc860255c08e4d08fa52391c01ffaaa0a05",
     "parts": [
       {
         "id": "p0-0",
@@ -1458,13 +1458,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 60
     }
   },
   {
     "id": "complex-23000002",
-    "signature": "b28cf60f99e73914ef6b9b5e20cdfed0fd6aa9f2780c03a81714b380bbb8b27d",
+    "signature": "35ec91eaf24ff3893cf9defa320bf1683d89f7298595d169a7a61be5a44cc3c6",
     "parts": [
       {
         "id": "p0-0",
@@ -2077,7 +2077,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 60
     }
   },
@@ -2882,7 +2882,7 @@
   },
   {
     "id": "complex-23000004",
-    "signature": "cd65a4393778cb44e655608c6b00c4ae24acd5b60c74039fc341562b00aeb605",
+    "signature": "b144b5f47068cdaecd9f385c8d2de8ad3b57d92bca1761d8acecd96e67159f6c",
     "parts": [
       {
         "id": "p0-0",
@@ -3495,13 +3495,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 80
     }
   },
   {
     "id": "complex-23000005",
-    "signature": "69511e7d59f1f1346d9dfa158bb7376d8e85b6bdd9d5cfabcdcd100da716b186",
+    "signature": "85db6024fbbbd040d6ec049634a0f3103ef9bf76e59e3f32221119399462657e",
     "parts": [
       {
         "id": "p0-0",
@@ -4324,7 +4324,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 100
     }
   },
@@ -4994,7 +4994,7 @@
   },
   {
     "id": "complex-23000007",
-    "signature": "2d7287016fa77d415a6906000129af918b8373db9d59ef68e4b7102f0fd5a118",
+    "signature": "4fc3ca91ccf50526ba22998de0700b1c771c412a2f3d7ffd1ab255c75510ca17",
     "parts": [
       {
         "id": "p0-0",
@@ -5787,13 +5787,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 150
     }
   },
   {
     "id": "complex-23000008",
-    "signature": "b9cf8880f935c4908a8ca06c19a67e5e3d2891e6c4bdd396fc1196174da456a6",
+    "signature": "bc09d9a961053aeddc3d572df74ea73c13cf700db41b61ecd6727037b72aede0",
     "parts": [
       {
         "id": "p0-0",
@@ -6376,7 +6376,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 80
     }
   },
@@ -7211,7 +7211,7 @@
   },
   {
     "id": "complex-23000010",
-    "signature": "544ef1438bded2de48fed62ff99f9a9eb5d54d5515b6a9bdc5a112745a1ceae8",
+    "signature": "9f6c1c1b131b0abc885d17daa4532dddf76c11bf16a7498e66986d58ceea4b63",
     "parts": [
       {
         "id": "p0-0",
@@ -7824,13 +7824,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 80
     }
   },
   {
     "id": "complex-23000011",
-    "signature": "2fef2271eedfe63c12253e3b99fe09c0c681892768df4f34e40a1778039e3469",
+    "signature": "1320ba108ebab9e2363d48776e5e6c3933c814d293c3d68d7288b9e56c62d5b1",
     "parts": [
       {
         "id": "p0-0",
@@ -8623,7 +8623,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 150
     }
   },
@@ -9263,7 +9263,7 @@
   },
   {
     "id": "complex-23000013",
-    "signature": "f1b866bf03c53059d2c288cb07b081f36ede85d66aa7a4ffcd8ef080a71096a4",
+    "signature": "807e09172bdc56fc1724a13f142b90e5ab2551677c1c43ae05ebe82ba7654532",
     "parts": [
       {
         "id": "p0-0",
@@ -10086,13 +10086,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 100
     }
   },
   {
     "id": "complex-23000014",
-    "signature": "472d069d4bf8bb64fea3cee9bbf98e94122bff3695f9249e4079ab0e5d4cf211",
+    "signature": "5b0066673a15944009c3a71fa2941a1aac69847a6d1608054e2be95d193535de",
     "parts": [
       {
         "id": "p0-0",
@@ -10720,7 +10720,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 150
     }
   },
@@ -11570,7 +11570,7 @@
   },
   {
     "id": "complex-23000016",
-    "signature": "80501696e37b0ca5b33d7bbd3b8c74b4c014be2ad34f88b3c3f2bf14ddc25f5c",
+    "signature": "1e23d9a8eff16be081871a15ace3bb8adf6d8a908846c8c9a1a83b51c93f59ad",
     "parts": [
       {
         "id": "p0-0",
@@ -12228,13 +12228,13 @@
       "grain": true,
       "single": true,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 60
     }
   },
   {
     "id": "complex-23000017",
-    "signature": "9ea0ef7aa775c528a3d8cf14619f0b492772381e33756c8d6546dfaa8960960e",
+    "signature": "c2518123575cbe1667b85e8bb7cff6a8a8b1d539bef4a309a2075864132eb11e",
     "parts": [
       {
         "id": "p0-0",
@@ -13072,7 +13072,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 150
     }
   },
@@ -13682,7 +13682,7 @@
   },
   {
     "id": "complex-23000019",
-    "signature": "f63158547d0d4a06923ca0e0846d6da0e01c48970742ad763d9ee21ce1a61029",
+    "signature": "a37a530b4eda4b1dfff0121b25ebb8880e6ec1cb984f36982df8fff0e0cb90e5",
     "parts": [
       {
         "id": "p0-0",
@@ -14535,13 +14535,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 80
     }
   },
   {
     "id": "complex-23000020",
-    "signature": "a5c2677bd59327c4e2b1bba7cb29bb01ca0454b23ffcdfe03493673abe180c70",
+    "signature": "67508b89f7c8b16d35ff6aff5d8318e0b74fb9fb04df9a7342615e517ee21d03",
     "parts": [
       {
         "id": "p0-0",
@@ -15064,7 +15064,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 60
     }
   },
@@ -15809,7 +15809,7 @@
   },
   {
     "id": "complex-23000022",
-    "signature": "35d76f78ae2ba9e1ee0aa616c46e5678525af5ce3e3f7f6f70f37adf6527d257",
+    "signature": "065a3c1ec3b342f33083148660f7d927dd64096c83001e4f02d334c9c65f6999",
     "parts": [
       {
         "id": "p0-0",
@@ -16392,13 +16392,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 100
     }
   },
   {
     "id": "complex-23000023",
-    "signature": "5a1b9b6e7498eaa15cf729e77a8a8e224fd67bf0a26a549993b5732a21090a01",
+    "signature": "567cf6b36c0cf04c09744e034e597b48574431b94babd077f4021807b7a9f132",
     "parts": [
       {
         "id": "p0-0",
@@ -17131,7 +17131,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 60
     }
   },
@@ -17726,7 +17726,7 @@
   },
   {
     "id": "complex-23000025",
-    "signature": "534a692fae4d3636b0b9f1ab293b191b917ea45103c16680f9bde19ebdeeb30f",
+    "signature": "16395c81e08888ef197ed50ef207f6cadde208cb45774bc2e468ccee90f8f5f0",
     "parts": [
       {
         "id": "p0-0",
@@ -18534,13 +18534,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 60
     }
   },
   {
     "id": "complex-23000026",
-    "signature": "f3d914f8c01f858559b487da720413de4b6a2347d55982c67331f1044950973f",
+    "signature": "e5a74ff8b42de123e8b4c3bc48ee61f12dd85125c0be63b7f9f70012670596ba",
     "parts": [
       {
         "id": "p0-0",
@@ -19138,7 +19138,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 150
     }
   },
@@ -19913,7 +19913,7 @@
   },
   {
     "id": "complex-23000028",
-    "signature": "b2b672f3e4f745acbf11a2f7413e103e36e7993a875ce184bc58845233ab176b",
+    "signature": "66f61c5e8f939a4713fda67a890dc352f7827443d8ebb5238c3fcb2115f6f6a2",
     "parts": [
       {
         "id": "p0-0",
@@ -20421,13 +20421,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 60
     }
   },
   {
     "id": "complex-23000029",
-    "signature": "c2080ead42b0821fb5a393f60bf8d17b6938ac4e4b3f09e96e3584aa9935e0f1",
+    "signature": "46597760cda631b5d7047d74bd1ecf255e1964cd15a6639a2a0d9bf702dbab5c",
     "parts": [
       {
         "id": "p0-0",
@@ -21175,7 +21175,7 @@
       "grain": true,
       "single": true,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 100
     }
   },
@@ -21815,7 +21815,7 @@
   },
   {
     "id": "complex-23000031",
-    "signature": "31cedb4d5968a843eb84b6340d1142e7ae6176e086200866f20cdbdab4134e95",
+    "signature": "a1ef6771cf571464e44d8011c6157783d71a21e3302e168cfe55402973dd58d7",
     "parts": [
       {
         "id": "p0-0",
@@ -22548,13 +22548,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 60
     }
   },
   {
     "id": "complex-23000032",
-    "signature": "6f68fcd4988f25af7725a25e205de57987eb268f74233bcb096f20da0b267776",
+    "signature": "d907c843bf3dab4bcd053e8d3df013eb3e95f7f6218530f9f676a7911e975ab3",
     "parts": [
       {
         "id": "p0-0",
@@ -23137,7 +23137,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 80
     }
   },
@@ -23972,7 +23972,7 @@
   },
   {
     "id": "complex-23000034",
-    "signature": "2a7878b730184091b6dada8767cdee2a9f2136d8984f67fd487449750343455a",
+    "signature": "d3335d1a14d0e1d8883afa977f1140694b765031bd6453a302db6e651267e985",
     "parts": [
       {
         "id": "p0-0",
@@ -24525,13 +24525,13 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "cuts",
+      "priority": "area",
       "minRemnant": 100
     }
   },
   {
     "id": "complex-23000035",
-    "signature": "e4d5fd0083989322a569b9e01cc644c29c9848817fa515c35841c2e22b6a381c",
+    "signature": "52feacd8b664321e544c3b24e845c7b3d01b7687b0b149d59057062c00e60fd6",
     "parts": [
       {
         "id": "p0-0",
@@ -25309,7 +25309,7 @@
       "grain": true,
       "single": false,
       "quality": "balanced",
-      "priority": "remnant",
+      "priority": "area",
       "minRemnant": 100
     }
   }
