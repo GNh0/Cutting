@@ -1,9 +1,9 @@
-import {validateProject} from './optimizer.js?v=264c921d27a9';
-import {csv,importRows,readProject} from './io.js?v=264c921d27a9';
-import {dimensionGeometry,rotateBinForView} from './diagram.js?v=264c921d27a9';
-import {groupRemnants,carryRemnantStock} from './remnants.js?v=264c921d27a9';
-import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=264c921d27a9';
-import {CALCULATION_VERSIONS,resolveCalculationVersion} from './calculation-versions.js?v=264c921d27a9';
+import {validateProject} from './optimizer.js?v=810122f1dba4';
+import {csv,importRows,readProject} from './io.js?v=810122f1dba4';
+import {dimensionGeometry,rotateBinForView} from './diagram.js?v=810122f1dba4';
+import {groupRemnants,carryRemnantStock} from './remnants.js?v=810122f1dba4';
+import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=810122f1dba4';
+import {CALCULATION_VERSIONS,resolveCalculationVersion} from './calculation-versions.js?v=810122f1dba4';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -94,7 +94,7 @@ function renderCalculationVersion(){
   $('#calculationVersion').innerHTML=CALCULATION_VERSIONS.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')+(known?'':`<option value="${esc(id)}">지원하지 않는 버전: ${esc(id)}</option>`);
   $('#calculationVersion').value=id===undefined?'cutting-v1':String(id);
   $('#calculation-version-note').textContent=known?resolveCalculationVersion(id).description:'지원하지 않는 계산식 버전입니다. 사용할 버전을 직접 선택하세요.';
-  const budgets=id==='smart2d-v1'?[9,36,144]:[30,120,240];
+  const budgets=id==='combined-v3'?[51,204,480]:id==='smart2d-v1'?[9,36,144]:[30,120,240];
   [...$('#quality').options].forEach((option,i)=>{option.textContent=`${['빠르게','균형','정밀'][i]} · 그룹당 ${budgets[i]}개 후보`;});
 }
 const resultVersionLabel=()=>result?.calculationVersion?`${result.calculationVersion.name} · ${result.calculationVersion.id}`:'';
@@ -195,7 +195,7 @@ function calculate(){
   const errors=validateProject(project);if(errors.length){notify(errors.slice(0,8).join('\n'),true);return;}
   cancelCalculation(false);setBusy(true);const snapshot=structuredClone(project);
   try{
-    worker=new Worker(new URL('./worker.js?v=264c921d27a9',import.meta.url),{type:'module'});
+    worker=new Worker(new URL('./worker.js?v=810122f1dba4',import.meta.url),{type:'module'});
     worker.onmessage=({data})=>{
       if(data.type==='progress'){$('#progress>div').style.width=data.percent+'%';return;}
       if(data.type==='done'){result=data.result;resultProject=snapshot;dirty=false;selectedSheet=0;selectedPart=null;selectedCut=null;cancelCalculation(false);renderResults();persist();notify(result.unplaced.length?`${result.placed}개 배치 · ${result.unplaced.length}개 미배치`:`${result.total}개 부재를 ${result.bins.length}장에 배치했습니다.`);}

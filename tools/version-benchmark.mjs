@@ -1,16 +1,18 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {Worker,isMainThread,parentPort} from 'node:worker_threads';
+import {Worker,isMainThread,parentPort,workerData} from 'node:worker_threads';
 import {once} from 'node:events';
 import {optimizeVersion} from '../src/calculation-versions.js';
 import {validateProject} from '../src/optimizer.js';
 import {randomScenario} from './random-scenarios.mjs';
 import {physicalSignature} from './complex-scenarios.mjs';
 import {auditResult} from './benchmark-audit.mjs';
-import {materialMetrics} from '../src/calculation-comparison.js';
+import {materialMetrics,compareMaterialQuality} from '../src/calculation-comparison.js';
 
 const versions=['cutting-v1','smart2d-v1'],epsilon=1e-7;
+const includeCombined=isMainThread?process.argv.includes('--combined'):workerData.includeCombined;
+const runVersions=includeCombined?[...versions,'combined-v3']:versions;
 const hash=body=>createHash('sha256').update(body).digest('hex');
 const require=(condition,message)=>{if(!condition)throw new Error(message);};
 const fulfillment=result=>{
@@ -20,8 +22,8 @@ const fulfillment=result=>{
 
 function evaluate(input){
   const errors=validateProject(input);require(!errors.length,errors.join('; '));
-  const results={},missing={};
-  for(const version of versions){
+  const results={},missing={},blendSources=[],fullResults={};
+  for(const version of runVersions){
     const job=structuredClone(input);job.settings.calculationVersion=version;
     const before=JSON.stringify(job),result=optimizeVersion(job);
     auditResult(result,job);require(JSON.stringify(job)===before,'Optimizer changed input');
@@ -31,10 +33,14 @@ function evaluate(input){
     }
     const m=materialMetrics(result);
     require(Math.abs(m.nonReusableLoss-m.trimLoss-m.kerfLoss-m.smallScrap)<Math.max(.0001,m.stockArea*1e-12),'Loss conservation failed');
-    results[version]=m;missing[version]=fulfillment(result);
+    results[version]=m;missing[version]=fulfillment(result);fullResults[version]=result;
+    if(version==='combined-v3')blendSources.push(...result.blendSelections.map(g=>g.source));
   }
   const comparable=missing[versions[0]]===missing[versions[1]]&&results[versions[0]].stockArea>0&&results[versions[1]].stockArea>0;
-  return {id:input.id,seed:input.benchmarkDesign.seed,signature:physicalSignature(input),inputSha256:hash(JSON.stringify(input)),partTypes:input.parts.length,quantity:input.parts.reduce((n,p)=>n+p.qty,0),stockTypes:input.stocks.length,comparable,unplacedByPart:missing,results};
+  if(includeCombined)for(const v of versions){
+    require(compareMaterialQuality(fullResults['combined-v3'],fullResults[v])<=0,`Combined material rank regressed against ${v}`);
+  }
+  return {id:input.id,seed:input.benchmarkDesign.seed,signature:physicalSignature(input),inputSha256:hash(JSON.stringify(input)),partTypes:input.parts.length,quantity:input.parts.reduce((n,p)=>n+p.qty,0),stockTypes:input.stocks.length,comparable,unplacedByPart:missing,results,...(includeCombined?{blendSources}:{})};
 }
 
 // Count independent material criteria; expose conflicts instead of hiding them
@@ -53,13 +59,13 @@ function summarize(rows){
 if(!isMainThread){
   parentPort.on('message',input=>{try{parentPort.postMessage({row:evaluate(input)});}catch(error){parentPort.postMessage({error:error.stack});}});
 }else{
-  const count=Number(process.argv[2]||1000),concurrency=Number(process.argv[3]||3),output=process.argv[4]||'docs',checkpoint=process.argv[5];
+  const count=Number(process.argv[2]||1000),concurrency=Number(process.argv[3]||3),output=process.argv[4]||'research/backtests/paired',checkpoint=process.argv[5]?.startsWith('--')?undefined:process.argv[5];
   require(Number.isInteger(count)&&count>=1&&count<=1000,'Count must be 1..1000');
   require(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=4,'Workers must be 1..4');
   const base=26000000,inputs=Array.from({length:count},(_,i)=>randomScenario(base+i)),sourceHashes={};
   require(new Set(inputs.map(physicalSignature)).size===count,'Duplicate physical input');
-  for(const file of ['src/optimizer.js','src/calculation-versions.js','src/calculation-comparison.js','src/cut-plan.js','src/cut-order.js','src/materials.js','tools/complex-scenarios.mjs','tools/random-scenarios.mjs','tools/benchmark-audit.mjs','tools/version-benchmark.mjs'])sourceHashes[file]=hash(await fs.readFile(file));
-  const header={type:'checkpoint',count,base,sourceHashes,inputHash:hash(JSON.stringify(inputs))},rows=[];
+  for(const file of ['src/optimizer.js','src/decision-tree.js','src/calculation-versions.js','src/calculation-comparison.js','src/cut-plan.js','src/cut-order.js','src/materials.js','tools/complex-scenarios.mjs','tools/random-scenarios.mjs','tools/benchmark-audit.mjs','tools/version-benchmark.mjs'])sourceHashes[file]=hash(await fs.readFile(file));
+  const header={type:'checkpoint',count,base,versions:runVersions,sourceHashes,inputHash:hash(JSON.stringify(inputs))},rows=[];
   if(checkpoint){
     try{
       const saved=(await fs.readFile(checkpoint,'utf8')).trim().split('\n').map(JSON.parse);
@@ -70,10 +76,10 @@ if(!isMainThread){
   }
   const completed=new Set(rows.map(r=>r.id)),pending=inputs.filter(p=>!completed.has(p.id)),workers=[];
   let cursor=0,writes=Promise.resolve();
-  console.log(JSON.stringify({type:'start',independentInputs:count,quality:'thorough',engineRuns:count*2,resumed:rows.length,workers:concurrency}));
+  console.log(JSON.stringify({type:'start',independentInputs:count,quality:'thorough',engineRuns:count*runVersions.length,resumed:rows.length,workers:concurrency}));
   try{
     await Promise.all(Array.from({length:Math.min(concurrency,pending.length)},async()=>{
-      const worker=new Worker(new URL(import.meta.url));workers.push(worker);
+      const worker=new Worker(new URL(import.meta.url),{workerData:{includeCombined}});workers.push(worker);
       while(cursor<pending.length){
         const input=pending[cursor++],reply=once(worker,'message');worker.postMessage(input);
         const [message]=await reply;if(message.error)throw new Error(`${input.id}: ${message.error}`);
@@ -97,9 +103,14 @@ if(!isMainThread){
   }
   const comparable=rows.filter(r=>r.comparable),complete=rows.filter(r=>versions.every(v=>r.results[v].unplaced===0));
   const completion=Object.fromEntries(['bothComplete','onlyCuttingComplete','onlySmart2dComplete','neitherComplete'].map(key=>[key,rows.filter(r=>{const a=r.results[versions[0]].unplaced===0,b=r.results[versions[1]].unplaced===0;return key==='bothComplete'?a&&b:key==='onlyCuttingComplete'?a&&!b:key==='onlySmart2dComplete'?!a&&b:!a&&!b;}).length]));
-  const report={date:'2026-10-23',scope:'Cutting v1 vs independent Smart2D analysis v1; not original Smart2DCutting executable',scenarioCount:count,uniquePhysicalInputs:count,comparisons:count,optimizerRuns:count*2,quality:'thorough',priority:'area',seedRange:[base,base+count-1],allPhysicalAuditsPassed:true,allMaterialLossAuditsPassed:true,sourceHashes,inputsSha256:header.inputHash,comparisonRule:'Count higher part-area/used-stock-area utilization and lower nonreusable-loss/used-stock-area loss rate independently. Compare material only for identical per-part fulfillment; record opposing winners as tradeoff. Percentage tolerance 1e-7 percentage points. No timing is measured.',lossDefinition:'Used stock - placed parts - reusable remnants = trim + kerf + small unusable remnants. Reusable requires both dimensions >= per-case minRemnant.',completion,incomparableCases:count-comparable.length,samePartFulfillment:summarize(comparable),bothComplete:summarize(complete),rows};
+  const combined=includeCombined?Object.fromEntries(versions.map(v=>{
+    const eligible=rows.filter(r=>r.unplacedByPart[v]===r.unplacedByPart['combined-v3']&&r.results[v].stockArea>0&&r.results['combined-v3'].stockArea>0);
+    const counts=(field,higher)=>{const out={[v]:0,'combined-v3':0,tie:0};for(const r of eligible){const a=r.results[v][field],b=r.results['combined-v3'][field];out[Math.abs(a-b)<=epsilon?'tie':(higher?a>b:a<b)?v:'combined-v3']++;}return out;};
+    return [v,{samePartFulfillmentCases:eligible.length,differentFulfillmentCases:count-eligible.length,utilization:counts('utilizationPercent',true),lossRate:counts('lossPercent',false)}];
+  })):undefined;
+  const report={date:'2026-10-23',scope:'Independent Cutting calculation versions; not original Smart2DCutting executable',versions:runVersions,scenarioCount:count,uniquePhysicalInputs:count,comparisons:count,optimizerRuns:count*runVersions.length,quality:'thorough',priority:'area',seedRange:[base,base+count-1],allPhysicalAuditsPassed:true,allMaterialLossAuditsPassed:true,sourceHashes,inputsSha256:header.inputHash,comparisonRule:'Count higher part-area/used-stock-area utilization and lower nonreusable-loss/used-stock-area loss rate independently. Compare material only for identical per-part fulfillment; record opposing winners as tradeoff. Percentage tolerance 1e-7 percentage points. No timing is measured.',lossDefinition:'Used stock - placed parts - reusable remnants = trim + kerf + small unusable remnants. Reusable requires both dimensions >= per-case minRemnant.',completion,incomparableCases:count-comparable.length,samePartFulfillment:summarize(comparable),bothComplete:summarize(complete),...(includeCombined?{combined}:{}),rows};
   await fs.mkdir(output,{recursive:true});
   await fs.writeFile(path.join(output,'version-benchmark.json'),JSON.stringify(report,null,2));
   await fs.writeFile(path.join(output,'version-benchmark-inputs.json'),JSON.stringify(inputs));
-  console.log(JSON.stringify({type:'complete',completion,incomparableCases:report.incomparableCases,samePartFulfillment:report.samePartFulfillment,bothComplete:report.bothComplete}));
+  console.log(JSON.stringify({type:'complete',completion,incomparableCases:report.incomparableCases,samePartFulfillment:report.samePartFulfillment,bothComplete:report.bothComplete,...(includeCombined?{combined}:{})}));
 }

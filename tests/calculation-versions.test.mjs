@@ -67,6 +67,10 @@ test('worker calculates the selected version and reports unsupported versions',a
     assert.equal(completed.result.calculationVersion.id,'smart2d-v1');
     assert.equal(completed.result.algorithm,'smart2d');
     messages.length=0;
+    self.onmessage({data:project('combined-v3')});
+    assert.equal(messages.find(m=>m.type==='done').result.calculationVersion.id,'combined-v3');
+    assert.equal(messages.find(m=>m.type==='done').result.algorithm,'combined');
+    messages.length=0;
     self.onmessage({data:project('future-v9')});
     assert.equal(messages.length,1);
     assert.equal(messages[0].type,'error');

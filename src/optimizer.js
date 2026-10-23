@@ -1,6 +1,8 @@
 // Independent guillotine packing engine. All lengths are millimetres.
-import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=264c921d27a9';
-import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=264c921d27a9';
+import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=810122f1dba4';
+import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=810122f1dba4';
+import {compareMaterialQuality,compareResultQuality,materialMetrics} from './calculation-comparison.js?v=810122f1dba4';
+import {selectSearchProfile} from './decision-tree.js?v=810122f1dba4';
 const EPS = 1e-7;
 export const LIMIT = 1000;
 export function validateProject(project,{allowIncomplete=false}={}) {
@@ -151,6 +153,7 @@ export function optimizeHybrid(project,onProgress=()=>{},baseBudget=48,partition
 export function optimize(project,onProgress=()=>{},options={}) {
   const errors=validateProject(project); if(errors.length) throw new Error(errors.join('\n'));
   if(options.partition!==false)return optimizeGroups(project,onProgress,options);
+  if(options.family==='combined')return optimizeCombined(project,onProgress,options);
   if((options.family||'hybrid')==='hybrid')return optimizeHybrid(project,onProgress,options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24),false,options.refineCuts!==false);
   if(options.family==='smart2d')return optimizeSmart2D(project,onProgress,options);
   const pieces=project.parts.filter(r=>r.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
@@ -184,6 +187,24 @@ export function optimize(project,onProgress=()=>{},options={}) {
     onProgress(Math.round((v+1)/iterations*100),result,{variant:v,strategy});
   }
   return {...best,iterations,settings:{...s}};
+}
+
+function optimizeCombined(project,onProgress,options){
+  // Called inside one connected inventory pool. Taking whole physical plans
+  // preserves shared LOT constraints; unrelated pools can choose either engine.
+  const budget=options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24);
+  const legacyRaw=optimizeHybrid(project,p=>onProgress(Math.round(p*.4)),budget,false,options.refineCuts!==false);
+  const legacy=options.refineCuts===false?legacyRaw:optimizeCutPlans(legacyRaw,project.settings);
+  const smart=optimizeSmart2D(project,p=>onProgress(40+Math.round(p*.4)),options);
+  const profile=selectSearchProfile(project,budget);
+  const treeRaw=optimize(project,p=>onProgress(80+Math.round(p*.2)),{family:profile.family,budget:profile.budget,rankMode:profile.rankMode,partition:false,refineCuts:false});
+  const tree=options.refineCuts===false?treeRaw:optimizeCutPlans(treeRaw,project.settings);
+  const material=project.settings.priority==='area';
+  const compare=(a,b)=>material?compareMaterialQuality(a,b):compareResultQuality(a,b,project.settings.priority);
+  const candidates=[['cutting-v1',legacy],['smart2d-v1',smart],['tree-guided',tree]];
+  let [source,chosen]=candidates[0];
+  for(const [id,result] of candidates.slice(1))if(compare(result,chosen)<0){source=id;chosen=result;}
+  return {...chosen,algorithm:'combined',iterations:legacy.iterations+smart.iterations+tree.iterations,blendSelection:{source,criterion:material?'fulfillment-utilization-loss':project.settings.priority,decisionTree:profile,candidates:Object.fromEntries(candidates.map(([id,r])=>[id,materialMetrics(r)]))}};
 }
 
 function optimizeSmart2D(project,onProgress,options){
@@ -240,11 +261,13 @@ function optimizeGroups(project,onProgress,options){
   const groups=[...components.values()];
   const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family||'hybrid'};
   if(options.family==='smart2d')output.searchProfiles=[];
+  if(options.family==='combined')output.blendSelections=[];
   groups.forEach((g,i)=>{
     const parts=g.parts,matchingStocks=stocks.filter(s=>g.stockIds.has(s.id));
     const layout=matchingStocks.length?optimize({...project,parts,stocks:matchingStocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
-    const r=options.refineCuts===false||options.family==='smart2d'?layout:optimizeCutPlans(layout,project.settings);
-    if(layout.smart2dSearch)output.searchProfiles.push({component:i,...layout.smart2dSearch});
+    const r=options.refineCuts===false||options.family==='smart2d'||options.family==='combined'?layout:optimizeCutPlans(layout,project.settings);
+    if(output.searchProfiles&&layout.smart2dSearch)output.searchProfiles.push({component:i,...layout.smart2dSearch});
+    if(layout.blendSelection)output.blendSelections.push({component:i,thickness:parts[0].thickness,material:parts[0].material,...layout.blendSelection});
     const offset=output.bins.length;
     output.bins.push(...r.bins);output.unplaced.push(...r.unplaced);output.remnants.push(...r.remnants.map(x=>({...x,sheet:x.sheet+offset})));
     for(const key of ['usedArea','stockArea','wasteArea','cutLength','cutCount','reusableArea','placed','total','iterations'])output[key]+=r[key];
