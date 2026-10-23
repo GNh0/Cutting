@@ -265,14 +265,23 @@
   ],
   "coverage": "Partial native placement port. Focused Ghidra passes recovered sorting, strip filling, split topologies, merge predicates, prefix completion comparison and the dynamic large-piece factor. Full integer conversion, rotation retry state and arbitrary-input native executable equivalence remain unverified.",
   "verification": {
-    "testsPassed": 114,
+    "testsPassed": 106,
     "complexPhysicalAuditsPassed": 300,
     "materialLossAuditsPassed": 300,
     "independentRandomInputs": 100,
     "versionsPerInput": 3,
     "quality": "thorough",
-    "v1CompleteResultComparisons": 330,
-    "v1Unchanged": true,
+    "seedRange": [
+      27010000,
+      27010099
+    ],
+    "unchangedVersionCompleteResultComparisons": 120,
+    "unchangedVersions": [
+      "cutting-v1",
+      "smart2d-v1"
+    ],
+    "unchangedBaselineCommit": "d92f680ebc65a9c76d7917e1e5b9f05ceeadd849",
+    "combinedObjectiveNonRegressionCases": 100,
     "originalExecutablePairedRandomTest": false
   },
   "nativePlacementPort": {

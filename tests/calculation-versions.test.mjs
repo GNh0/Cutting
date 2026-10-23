@@ -69,7 +69,7 @@ test('worker calculates the selected version and reports unsupported versions',a
     messages.length=0;
     self.onmessage({data:project('combined-v3')});
     assert.equal(messages.find(m=>m.type==='done').result.calculationVersion.id,'combined-v3');
-    assert.equal(messages.find(m=>m.type==='done').result.algorithm,'decision-tree');
+    assert.equal(messages.find(m=>m.type==='done').result.algorithm,'combined');
     messages.length=0;
     self.onmessage({data:project('future-v9')});
     assert.equal(messages.length,1);

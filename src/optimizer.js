@@ -1,9 +1,8 @@
 // Independent guillotine packing engine. All lengths are millimetres.
-import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=45e601b7291f';
-import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=45e601b7291f';
-import {materialMetrics} from './calculation-comparison.js?v=45e601b7291f';
-import {searchNativeSheet,nativeLargePieceFactor} from './smart2d-placement.js?v=45e601b7291f';
-import {searchPlacementTree} from './placement-tree.js?v=45e601b7291f';
+import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=7bcc27a0c011';
+import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=7bcc27a0c011';
+import {materialMetrics,compareMaterialQuality,compareResultQuality} from './calculation-comparison.js?v=7bcc27a0c011';
+import {searchNativeSheet,nativeLargePieceFactor} from './smart2d-placement.js?v=7bcc27a0c011';
 const EPS = 1e-7;
 export const LIMIT = 1000;
 export function validateProject(project,{allowIncomplete=false}={}) {
@@ -156,8 +155,8 @@ export function optimizeHybrid(project,onProgress=()=>{},baseBudget=48,partition
 }
 export function optimize(project,onProgress=()=>{},options={}) {
   const errors=validateProject(project); if(errors.length) throw new Error(errors.join('\n'));
+  if(options.family==='combined')return optimizeCombined(project,onProgress,options);
   if(options.partition!==false)return optimizeGroups(project,onProgress,options);
-  if(options.family==='tree'||options.family==='combined')return searchPlacementTree(project,onProgress,{budget:options.budget??(project.settings.quality==='quick'?12:project.settings.quality==='thorough'?96:48),refineCuts:options.refineCuts!==false});
   if((options.family||'hybrid')==='hybrid')return optimizeHybrid(project,onProgress,options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24),false,options.refineCuts!==false);
   if(options.family==='smart2d')return optimizeSmart2D(project,onProgress,options);
   const pieces=project.parts.filter(r=>r.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
@@ -258,7 +257,7 @@ export function optimizeCutPlans(result,s){
   return {...result,bins,remnants,cutCount:bins.reduce((n,b)=>n+b.cuts.length,0),cutLength:bins.reduce((n,b)=>n+b.cuts.reduce((a,c)=>a+c.length,0),0),reusableArea:remnants.filter(r=>r.reusable).reduce((n,r)=>n+r.w*r.h,0),largestRemnant:Math.max(0,...remnants.filter(r=>r.reusable).map(r=>r.w*r.h))};
 }
 
-function optimizeGroups(project,onProgress,options){
+function inventoryComponents(project){
   // Part requirements can overlap when manufacturer or LOT is omitted. Search
   // connected requirements together so the same inventory is never counted twice.
   const requests=materialGroups(project.parts.filter(r=>r.enabled!==false)),stocks=project.stocks.filter(s=>s.enabled!==false);
@@ -266,21 +265,59 @@ function optimizeGroups(project,onProgress,options){
   const available=requests.map(g=>stocks.filter(s=>matches(g,s)));
   available.forEach((list,i)=>list.forEach(s=>{if(owners.has(s.id))parents[find(i)]=find(owners.get(s.id));else owners.set(s.id,i);}));
   const components=new Map();requests.forEach((g,i)=>{const key=find(i);if(!components.has(key))components.set(key,{parts:[],stockIds:new Set()});const c=components.get(key);c.parts.push(...g.rows.map(x=>x.row));available[i].forEach(s=>c.stockIds.add(s.id));});
-  const groups=[...components.values()];
-  const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family==='tree'||options.family==='combined'?'decision-tree':options.family||'hybrid'};
+  return [...components.values()];
+}
+
+function optimizeCombined(project,onProgress,options){
+  const settings=project.settings,components=inventoryComponents(project);
+  const compare=(a,b)=>settings.priority==='area'?compareMaterialQuality(a,b):compareResultQuality(a,b,settings.priority);
+  onProgress(0);
+  // These are the exact complete public v1/v2 pipelines, including their cut
+  // refinement. The third version never changes their placement criteria.
+  const first=optimize(project,p=>onProgress(Math.round(p/2)),{...options,family:'hybrid',partition:true});
+  const second=optimize(project,p=>onProgress(50+Math.round(p/2)),{...options,family:'smart2d',partition:true});
+  const baselines=[first,second],versions=['cutting-v1','smart2d-v1'];
+  const selections=[],bins=[],unplaced=[];
+  for(const [component,group] of components.entries()){
+    const ids=new Set(group.parts.map(p=>p.id));
+    const total=group.parts.reduce((n,p)=>n+p.qty,0);
+    const candidates=baselines.map(result=>({...layoutResult(result.bins.filter(b=>group.stockIds.has(b.stock.id)),
+      result.unplaced.filter(p=>ids.has(p.id)),total,settings),settings}));
+    const selected=compare(candidates[1],candidates[0])<0?1:0;
+    bins.push(...candidates[selected].bins);unplaced.push(...candidates[selected].unplaced);
+    selections.push({component,selectedVersion:versions[selected],candidates:candidates.map((candidate,i)=>({version:versions[i],...materialMetrics(candidate)}))});
+  }
+  const aggregate=(chosenBins,missing)=>displayGroups({...layoutResult(chosenBins,missing,first.total,settings),settings:{...settings,material:true}});
+  let chosen=aggregate(bins,unplaced),wholeJobFallback=null;
+  // Largest-remnant comparisons are non-additive across inventory groups.
+  // Retain both whole-job baselines as well, so aggregation cannot worsen the
+  // selected objective. This guard also makes the acceptance contract explicit.
+  for(let i=0;i<baselines.length;i++)if(compare(baselines[i],chosen)<0){chosen=baselines[i];wholeJobFallback=versions[i];}
+  if(wholeJobFallback)for(const selection of selections)selection.selectedVersion=wholeJobFallback;
+  onProgress(100);
+  return {...chosen,algorithm:'combined',iterations:first.iterations+second.iterations,blendSelections:selections,
+    combination:{versions,selection:'complete-layout-per-shared-inventory-component',wholeJobFallback,
+      objective:settings.priority==='area'?'fulfillment-stock-area-discard-largest-remnant':settings.priority}};
+}
+
+function optimizeGroups(project,onProgress,options){
+  const groups=inventoryComponents(project),stocks=project.stocks.filter(s=>s.enabled!==false);
+  const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family||'hybrid'};
   if(options.family==='smart2d')output.searchProfiles=[];
-  if(options.family==='tree'||options.family==='combined'){output.treeSearches=[];output.placementTree={independent:true};}
   groups.forEach((g,i)=>{
     const parts=g.parts,matchingStocks=stocks.filter(s=>g.stockIds.has(s.id));
     const layout=matchingStocks.length?optimize({...project,parts,stocks:matchingStocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
-    const r=options.refineCuts===false||options.family==='smart2d'||options.family==='combined'||options.family==='tree'?layout:optimizeCutPlans(layout,project.settings);
+    const r=options.refineCuts===false||options.family==='smart2d'?layout:optimizeCutPlans(layout,project.settings);
     if(output.searchProfiles&&layout.smart2dSearch)output.searchProfiles.push({component:i,...layout.smart2dSearch});
-    if(output.treeSearches&&layout.placementTree)output.treeSearches.push({component:i,...layout.placementTree});
     const offset=output.bins.length;
     output.bins.push(...r.bins);output.unplaced.push(...r.unplaced);output.remnants.push(...r.remnants.map(x=>({...x,sheet:x.sheet+offset})));
     for(const key of ['usedArea','stockArea','wasteArea','cutLength','cutCount','reusableArea','placed','total','iterations'])output[key]+=r[key];
     output.largestRemnant=Math.max(output.largestRemnant,r.largestRemnant);onProgress(Math.round((i+1)/groups.length*100));
   });
+  return displayGroups(output);
+}
+
+function displayGroups(output){
   // Display the actual stock identities, including the selected LOT for flexible
   // parts. Unplaced requests retain their own requirements and do not invent a LOT.
   const displayed=new Map(),getGroup=(r,requestOnly=false)=>{const key=materialKey(r);if(!displayed.has(key))displayed.set(key,{key,...materialInfo(r),sheets:[],placed:0,total:0,unplaced:0,stockArea:0,usedArea:0,requestOnly});return displayed.get(key);};

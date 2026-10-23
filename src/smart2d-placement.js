@@ -1,9 +1,9 @@
 // Port of the captured Smart2DCutting strip evaluators 00594cc8/005952f4
 // and their two split topologies 0057daf4/0057df6c. See docs for evidence
 // boundaries: wrapper search and native postprocessing are separate steps.
-import {materialMatches} from './materials.js?v=45e601b7291f';
-import {mergeNativeFree} from './smart2d-merge.js?v=45e601b7291f';
-import {sharedCutPlan} from './cut-plan.js?v=45e601b7291f';
+import {materialMatches} from './materials.js?v=7bcc27a0c011';
+import {mergeNativeFree} from './smart2d-merge.js?v=7bcc27a0c011';
+import {sharedCutPlan} from './cut-plan.js?v=7bcc27a0c011';
 
 const EPS=1e-7;
 const fits=(a,b)=>a<=b+EPS;

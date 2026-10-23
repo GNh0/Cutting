@@ -34,7 +34,10 @@ function evaluate(input){
     const m=materialMetrics(result);
     require(Math.abs(m.nonReusableLoss-m.trimLoss-m.kerfLoss-m.smallScrap)<Math.max(.0001,m.stockArea*1e-12),'Loss conservation failed');
     results[version]=m;missing[version]=fulfillment(result);fullResults[version]=result;
-    if(version==='combined-v3')blendSources.push('independent-decision-tree');
+    if(version==='combined-v3'){
+      blendSources.push(...new Set(result.blendSelections.map(selection=>selection.selectedVersion)));
+      for(const baseline of versions)require(compareMaterialQuality(result,fullResults[baseline])<=0,`Combined material objective regressed against ${baseline}`);
+    }
   }
   const comparable=missing[versions[0]]===missing[versions[1]]&&results[versions[0]].stockArea>0&&results[versions[1]].stockArea>0;
   return {id:input.id,seed:input.benchmarkDesign.seed,signature:physicalSignature(input),inputSha256:hash(JSON.stringify(input)),partTypes:input.parts.length,quantity:input.parts.reduce((n,p)=>n+p.qty,0),stockTypes:input.stocks.length,comparable,unplacedByPart:missing,results,...(includeCombined?{blendSources}:{})};
@@ -59,9 +62,12 @@ if(!isMainThread){
   const count=Number(process.argv[2]||1000),concurrency=Number(process.argv[3]||3),output=process.argv[4]||'research/backtests/paired',checkpoint=process.argv[5]?.startsWith('--')?undefined:process.argv[5];
   require(Number.isInteger(count)&&count>=1&&count<=1000,'Count must be 1..1000');
   require(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=4,'Workers must be 1..4');
-  const base=26000000,inputs=Array.from({length:count},(_,i)=>randomScenario(base+i)),sourceHashes={};
+  const baseArgument=process.argv.find(arg=>arg.startsWith('--seed-base='));
+  const base=baseArgument?Number(baseArgument.slice('--seed-base='.length)):26000000;
+  require(Number.isSafeInteger(base)&&base>=0&&base+count<=2147483647,'Seed base must be a nonnegative safe integer within the supported range');
+  const inputs=Array.from({length:count},(_,i)=>randomScenario(base+i)),sourceHashes={};
   require(new Set(inputs.map(physicalSignature)).size===count,'Duplicate physical input');
-  for(const file of ['src/optimizer.js','src/placement-tree.js','src/smart2d-placement.js','src/smart2d-merge.js','src/decision-tree.js','src/calculation-versions.js','src/calculation-comparison.js','src/cut-plan.js','src/cut-order.js','src/materials.js','tools/complex-scenarios.mjs','tools/random-scenarios.mjs','tools/benchmark-audit.mjs','tools/version-benchmark.mjs'])sourceHashes[file]=hash(await fs.readFile(file));
+  for(const file of ['src/optimizer.js','src/smart2d-placement.js','src/smart2d-merge.js','src/calculation-versions.js','src/calculation-comparison.js','src/cut-plan.js','src/cut-order.js','src/materials.js','tools/complex-scenarios.mjs','tools/random-scenarios.mjs','tools/benchmark-audit.mjs','tools/version-benchmark.mjs'])sourceHashes[file]=hash(await fs.readFile(file));
   const header={type:'checkpoint',count,base,versions:runVersions,sourceHashes,inputHash:hash(JSON.stringify(inputs))},rows=[];
   if(checkpoint){
     try{
