@@ -1,5 +1,11 @@
 const EPS=1e-7;
 
+// kerf is the width consumed inside that fragment. A blade can extend past
+// an outside edge; nominalKerf retains its full width on those terminal cuts.
+export function kerfArea(result){
+  return result.bins.reduce((sum,bin)=>sum+bin.cuts.reduce((n,c)=>n+c.length*c.kerf,0),0);
+}
+
 // Same lexicographic criteria as optimizer.js better(). Sheet count and run
 // time are reporting metrics and do not override the selected priority.
 export function resultQualityRank(result,priority='area'){
@@ -21,7 +27,7 @@ export function materialMetrics(result){
   const percent=area=>stockArea?area/stockArea*100:0;
   const trim=result.settings?.trim??0;
   const trimLoss=result.bins.reduce((n,b)=>n+b.stock.w*b.stock.h-(b.stock.w-2*trim)*(b.stock.h-2*trim),0);
-  const kerfLoss=result.cutLength*(result.settings?.kerf??0);
+  const kerfLoss=kerfArea(result);
   const smallScrap=result.remnants.filter(r=>!r.reusable).reduce((n,r)=>n+r.w*r.h,0);
   return {placed:result.placed,unplaced:result.unplaced.length,unplacedArea:result.unplaced.reduce((n,p)=>n+p.w*p.h,0),sheets:result.bins.length,stockArea,usedArea,utilizationPercent:percent(usedArea),reusableArea,reusablePercent:percent(reusableArea),largestRemnant:result.largestRemnant,nonReusableLoss,lossPercent:percent(nonReusableLoss),recoverablePercent:percent(usedArea+reusableArea),trimLoss,kerfLoss,smallScrap,iterations:result.iterations};
 }

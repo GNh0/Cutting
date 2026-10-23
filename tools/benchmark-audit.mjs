@@ -8,6 +8,8 @@ export function auditResult(result,project){
     stockUse.set(bin.stock.id,(stockUse.get(bin.stock.id)||0)+1);
     let fragments=[{x:trim,y:trim,w:bin.stock.w-2*trim,h:bin.stock.h-2*trim}];
     for(const c of bin.cuts){
+      require(Number.isFinite(c.kerf)&&c.kerf>=0&&c.kerf<=project.settings.kerf+1e-5,'Invalid consumed saw width');
+      if(c.nominalKerf!==undefined)require(close(c.nominalKerf,project.settings.kerf),'Nominal saw width mismatch');
       const i=fragments.findIndex(f=>c.axis==='x'?close(f.y,c.y)&&close(f.h,c.length)&&c.x>f.x&&c.x+c.kerf<=f.x+f.w+1e-5:close(f.x,c.x)&&close(f.w,c.length)&&c.y>f.y&&c.y+c.kerf<=f.y+f.h+1e-5);
       require(i>=0,'Cut does not span one physical fragment');const f=fragments.splice(i,1)[0];
       if(c.axis==='x')fragments.push({x:f.x,y:f.y,w:c.x-f.x,h:f.h},{x:c.x+c.kerf,y:f.y,w:f.x+f.w-c.x-c.kerf,h:f.h});
@@ -19,7 +21,14 @@ export function auditResult(result,project){
       require(!instances.has(p.instance),'Duplicate part');instances.add(p.instance);used+=p.w*p.h;
       const i=fragments.findIndex(f=>close(f.x,p.x)&&close(f.y,p.y)&&close(f.w,p.w)&&close(f.h,p.h));require(i>=0&&!pieceCells.has(i),'Part is not a unique physical final fragment');pieceCells.add(i);
       require(materialMatches(p,bin.stock),'Material requirement mismatch');
+      require(!p.rotated||project.settings.rotate&&p.rotate!==false,'Forbidden rotation');
       if(project.settings.grain&&p.grain!=='none'&&bin.stock.grain!=='none')require((p.rotated?(p.grain==='x'?'y':'x'):p.grain)===bin.stock.grain,'Grain mismatch');
+    }
+    const remainder=fragments.filter((_,i)=>!pieceCells.has(i));
+    if(bin.free){
+      require(remainder.length===bin.free.length,'Free fragment count mismatch');
+      const unmatched=[...remainder];
+      for(const r of bin.free){const i=unmatched.findIndex(f=>['x','y','w','h'].every(k=>close(f[k],r[k])));require(i>=0,'Reported remnant is not a physical final fragment');unmatched.splice(i,1);}
     }
     const area=fragments.reduce((n,f)=>n+f.w*f.h,0)+bin.cuts.reduce((n,c)=>n+c.length*c.kerf,0);require(close(area,(bin.stock.w-2*trim)*(bin.stock.h-2*trim)),'Area conservation failed');
   }

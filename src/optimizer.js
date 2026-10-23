@@ -1,8 +1,9 @@
 // Independent guillotine packing engine. All lengths are millimetres.
-import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=810122f1dba4';
-import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=810122f1dba4';
-import {compareMaterialQuality,compareResultQuality,materialMetrics} from './calculation-comparison.js?v=810122f1dba4';
-import {selectSearchProfile} from './decision-tree.js?v=810122f1dba4';
+import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=45e601b7291f';
+import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=45e601b7291f';
+import {materialMetrics} from './calculation-comparison.js?v=45e601b7291f';
+import {searchNativeSheet,nativeLargePieceFactor} from './smart2d-placement.js?v=45e601b7291f';
+import {searchPlacementTree} from './placement-tree.js?v=45e601b7291f';
 const EPS = 1e-7;
 export const LIMIT = 1000;
 export function validateProject(project,{allowIncomplete=false}={}) {
@@ -121,6 +122,9 @@ function run(pieces,stocks,s,variant,strategy=null,scoringMode=null,direction='a
     bin.parts.push({...p,x:c.f.x,y:c.f.y,w:c.o.w,h:c.o.h,rotated:c.o.rot});
     bin.cuts.push(...c.sp.cuts.map(cut=>({...cut,partInstance:p.instance})));
   }
+  return layoutResult(bins,unplaced,pieces.length,s);
+}
+function layoutResult(bins,unplaced,total,s){
   const usedArea=bins.reduce((n,b)=>n+b.parts.reduce((a,p)=>a+p.w*p.h,0),0);
   const stockArea=bins.reduce((n,b)=>n+b.stock.w*b.stock.h,0);
   const cutLength=bins.reduce((n,b)=>n+b.cuts.reduce((a,c)=>a+c.length,0),0);
@@ -128,7 +132,7 @@ function run(pieces,stocks,s,variant,strategy=null,scoringMode=null,direction='a
   const minRemnant=s.minRemnant??100;
   const remnants=bins.flatMap((b,i)=>b.free.map((r,j)=>({...r,sheet:i,index:j,...materialInfo(b.stock),grain:b.stock.grain,reusable:Math.min(r.w,r.h)>=minRemnant-EPS})));
   const reusable=remnants.filter(r=>r.reusable),reusableArea=reusable.reduce((n,r)=>n+r.w*r.h,0),largestRemnant=Math.max(0,...reusable.map(r=>r.w*r.h));
-  return {bins,unplaced,usedArea,stockArea,wasteArea:stockArea-usedArea,cutLength,cutCount,remnants,reusableArea,largestRemnant,placed:pieces.length-unplaced.length,total:pieces.length};
+  return {bins,unplaced,usedArea,stockArea,wasteArea:stockArea-usedArea,cutLength,cutCount,remnants,reusableArea,largestRemnant,placed:total-unplaced.length,total};
 }
 function better(a,b,priority,rankMode='balanced') {
   if(!b) return true;
@@ -153,7 +157,7 @@ export function optimizeHybrid(project,onProgress=()=>{},baseBudget=48,partition
 export function optimize(project,onProgress=()=>{},options={}) {
   const errors=validateProject(project); if(errors.length) throw new Error(errors.join('\n'));
   if(options.partition!==false)return optimizeGroups(project,onProgress,options);
-  if(options.family==='combined')return optimizeCombined(project,onProgress,options);
+  if(options.family==='tree'||options.family==='combined')return searchPlacementTree(project,onProgress,{budget:options.budget??(project.settings.quality==='quick'?12:project.settings.quality==='thorough'?96:48),refineCuts:options.refineCuts!==false});
   if((options.family||'hybrid')==='hybrid')return optimizeHybrid(project,onProgress,options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24),false,options.refineCuts!==false);
   if(options.family==='smart2d')return optimizeSmart2D(project,onProgress,options);
   const pieces=project.parts.filter(r=>r.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
@@ -189,60 +193,64 @@ export function optimize(project,onProgress=()=>{},options={}) {
   return {...best,iterations,settings:{...s}};
 }
 
-function optimizeCombined(project,onProgress,options){
-  // Called inside one connected inventory pool. Taking whole physical plans
-  // preserves shared LOT constraints; unrelated pools can choose either engine.
-  const budget=options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24);
-  const legacyRaw=optimizeHybrid(project,p=>onProgress(Math.round(p*.4)),budget,false,options.refineCuts!==false);
-  const legacy=options.refineCuts===false?legacyRaw:optimizeCutPlans(legacyRaw,project.settings);
-  const smart=optimizeSmart2D(project,p=>onProgress(40+Math.round(p*.4)),options);
-  const profile=selectSearchProfile(project,budget);
-  const treeRaw=optimize(project,p=>onProgress(80+Math.round(p*.2)),{family:profile.family,budget:profile.budget,rankMode:profile.rankMode,partition:false,refineCuts:false});
-  const tree=options.refineCuts===false?treeRaw:optimizeCutPlans(treeRaw,project.settings);
-  const material=project.settings.priority==='area';
-  const compare=(a,b)=>material?compareMaterialQuality(a,b):compareResultQuality(a,b,project.settings.priority);
-  const candidates=[['cutting-v1',legacy],['smart2d-v1',smart],['tree-guided',tree]];
-  let [source,chosen]=candidates[0];
-  for(const [id,result] of candidates.slice(1))if(compare(result,chosen)<0){source=id;chosen=result;}
-  return {...chosen,algorithm:'combined',iterations:legacy.iterations+smart.iterations+tree.iterations,blendSelection:{source,criterion:material?'fulfillment-utilization-loss':project.settings.priority,decisionTree:profile,candidates:Object.fromEntries(candidates.map(([id,r])=>[id,materialMetrics(r)]))}};
+// The native per-rectangle strip score lives in smart2d-placement.js. This
+// adapter supplies Cutting's material/LOT inventory, which is a different data
+// model from the original DBF job. No legacy placement scores are used here.
+function nativeRun(project,profile,choices=[],rebuildCache=new Map()){
+  const s=project.settings,stocks=project.stocks.filter(r=>r.enabled!==false);
+  let pieces=project.parts.filter(r=>r.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
+  const total=pieces.length,bins=[],remaining=stocks.map(r=>r.qty);
+  const eligible=p=>stocks.flatMap((stock,i)=>matches(p,stock)&&orientations(p,stock,s).some(o=>o.w<=stock.w-2*s.trim+EPS&&o.h<=stock.h-2*s.trim+EPS)?[i]:[]);
+  const restrictions=new Map(pieces.map(p=>[p.id,eligible(p)]));
+  let decisionOffset=0;
+  while(pieces.length){
+    // Reserve a compatible sheet for the most constrained outstanding request.
+    const required=[...pieces].sort((a,b)=>restrictions.get(a.id).length-restrictions.get(b.id).length).find(p=>restrictions.get(p.id).some(i=>remaining[i]>0&&(!s.single||!bins.some(b=>materialKey(b.stock)===materialKey(stocks[i])))));
+    if(!required)break;
+    let chosen=null;
+    for(const i of restrictions.get(required.id)){
+      const stock=stocks[i];if(remaining[i]<=0||s.single&&bins.some(b=>materialKey(b.stock)===materialKey(stock)))continue;
+      const bin=searchNativeSheet(pieces,stock,s,{...profile,largePieceFactor:nativeLargePieceFactor(project.parts,stock,s),choices:choices.slice(decisionOffset),rebuildCache});
+      if(!bin.parts.length)continue;
+      bin.stockIndex=i;
+      const one=layoutResult([bin],[],bin.parts.length,s),m=materialMetrics({...one,settings:s});
+      // Recovered same-sheet candidate metrics: utilization, reusable area,
+      // largest remnant. Cross-stock selection is a Cutting inventory adapter.
+      const rank=[-Number(bin.parts.some(p=>p.id===required.id)),-m.utilizationPercent,-m.reusablePercent,-m.largestRemnant];
+      if(!chosen||lexLess(rank,chosen.rank))chosen={bin,rank};
+    }
+    if(!chosen)break;
+    const {bin}=chosen;remaining[bin.stockIndex]--;bins.push(bin);
+    decisionOffset+=bin.decisions.length;
+    const placed=new Set(bin.parts.map(p=>p.instance));pieces=pieces.filter(p=>!placed.has(p.instance));
+  }
+  return {...layoutResult(bins,pieces,total,s),settings:{...s},placementDecisions:bins.flatMap((b,sheet)=>b.decisions.map(d=>({...d,sheet})))};
 }
+function lexLess(a,b){for(let i=0;i<a.length;i++)if(Math.abs(a[i]-b[i])>EPS)return a[i]<b[i];return false;}
 
 function optimizeSmart2D(project,onProgress,options){
-  // Independent reconstruction of the documented direction/level portfolio.
-  // These ordering and placement scores are Cutting choices, not recovered
-  // Smart2DCutting formulas. Every higher quality keeps all lower candidates.
+  // Thresholds sample the native 1..100 fill-threshold loop. Higher quality
+  // retains the same prefix; they no longer perturb row order or score weights.
+  const thresholds=[100,75,50,25,95,90,85,80,70,65,60,55,45,35,15,1];
   const s=project.settings,variants=s.quality==='quick'?1:s.quality==='balanced'?4:16;
   const directions=['x','y','auto'],levels=[1,2,3],iterations=variants*9;
-  const pieces=project.parts.filter(p=>p.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
-  const stocks=project.stocks.filter(stock=>stock.enabled!==false);
-  const restriction=new Map(project.parts.filter(p=>p.enabled!==false).map(p=>[p.id,{specified:Number(Boolean(p.manufacturer.trim()))+Number(Boolean(p.lot.trim())),choices:stocks.filter(stock=>matches(p,stock)).length}]));
-  const refinementCheckpoints=[];
+  const refinementCheckpoints=[],rebuildCache=new Map();
   let rawBest=null,rawProfile=null,best=null,selectedProfile=null,done=0;
   for(let variant=0;variant<variants;variant++)for(const direction of directions)for(const level of levels){
-    const mode=(level-1+Math.floor(variant/4))%8;
-    const key=p=>mode===0?p.w*p.h:mode===1?Math.max(p.w,p.h):mode===2?Math.min(p.w,p.h):mode===3?p.w+p.h:mode===4?p.w:mode===5?p.h:mode===6?Math.abs(p.w-p.h):p.w*p.h/Math.sqrt(Math.max(p.w,p.h));
-    const weight=p=>variant===0?1:1+.2*Math.sin((p.originalW*7+p.originalH*13+p.id.length*31)*(variant+1));
-    const sorted=[...pieces].sort((a,b)=>{
-      const ar=restriction.get(a.id),br=restriction.get(b.id);
-      return br.specified-ar.specified||ar.choices-br.choices||key(b)*weight(b)-key(a)*weight(a)||a.instance.localeCompare(b.instance);
-    });
-    const layout=run(sorted,stocks,s,variant,null,level-1,direction);
-    const profile={direction,level,variant};
+    const profile={direction,level,threshold:thresholds[variant],variant};
+    const layout=nativeRun(project,profile,[],rebuildCache);
     if(better(layout,rawBest,s.priority,options.rankMode||'balanced')){rawBest=layout;rawProfile=profile;}
     done++;
     if(options.refineCuts===false){best=rawBest;selectedProfile=rawProfile;}
     else if(done===9||done===36||done===144){
-      // Refine only the best raw layout at each retained quality prefix.
-      // Keep earlier physical winners, so increasing quality cannot worsen
-      // the returned objective while requiring at most three refinements.
-      const refined=optimizeCutPlans(rawBest,s);
-      refinementCheckpoints.push(done);
+      const refined=optimizeCutPlans(rawBest,s);refinementCheckpoints.push(done);
       if(better(refined,best,s.priority,options.rankMode||'balanced')){best=refined;selectedProfile=rawProfile;}
     }
     onProgress(Math.round(done/iterations*100),best||rawBest,profile);
   }
-  return {...best,iterations,settings:{...s},algorithm:'smart2d',smart2dSearch:{directions,levels,variantsPerProfile:variants,candidates:iterations,selectedProfile,refinementCheckpoints,cutRefinement:options.refineCuts===false?'none':'quality-checkpoints'}};
+  return {...best,iterations,settings:{...s},algorithm:'smart2d',smart2dSearch:{directions,levels,variantsPerProfile:variants,thresholds:thresholds.slice(0,variants),candidates:iterations,selectedProfile,refinementCheckpoints,cutRefinement:options.refineCuts===false?'none':'quality-checkpoints',placement:'recovered-native-strip-core',scope:'Recovered strip fit and split; Cutting inventory and physical cut adapter. Full native postprocessing and wrapper equivalence unverified.'}};
 }
+
 
 export function optimizeCutPlans(result,s){
   const bins=result.bins.map(b=>sharedCutPlan(b,s,{maxStates:512})||orderCutPlan(b,s));
@@ -259,15 +267,15 @@ function optimizeGroups(project,onProgress,options){
   available.forEach((list,i)=>list.forEach(s=>{if(owners.has(s.id))parents[find(i)]=find(owners.get(s.id));else owners.set(s.id,i);}));
   const components=new Map();requests.forEach((g,i)=>{const key=find(i);if(!components.has(key))components.set(key,{parts:[],stockIds:new Set()});const c=components.get(key);c.parts.push(...g.rows.map(x=>x.row));available[i].forEach(s=>c.stockIds.add(s.id));});
   const groups=[...components.values()];
-  const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family||'hybrid'};
+  const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family==='tree'||options.family==='combined'?'decision-tree':options.family||'hybrid'};
   if(options.family==='smart2d')output.searchProfiles=[];
-  if(options.family==='combined')output.blendSelections=[];
+  if(options.family==='tree'||options.family==='combined'){output.treeSearches=[];output.placementTree={independent:true};}
   groups.forEach((g,i)=>{
     const parts=g.parts,matchingStocks=stocks.filter(s=>g.stockIds.has(s.id));
     const layout=matchingStocks.length?optimize({...project,parts,stocks:matchingStocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
-    const r=options.refineCuts===false||options.family==='smart2d'||options.family==='combined'?layout:optimizeCutPlans(layout,project.settings);
+    const r=options.refineCuts===false||options.family==='smart2d'||options.family==='combined'||options.family==='tree'?layout:optimizeCutPlans(layout,project.settings);
     if(output.searchProfiles&&layout.smart2dSearch)output.searchProfiles.push({component:i,...layout.smart2dSearch});
-    if(layout.blendSelection)output.blendSelections.push({component:i,thickness:parts[0].thickness,material:parts[0].material,...layout.blendSelection});
+    if(output.treeSearches&&layout.placementTree)output.treeSearches.push({component:i,...layout.placementTree});
     const offset=output.bins.length;
     output.bins.push(...r.bins);output.unplaced.push(...r.unplaced);output.remnants.push(...r.remnants.map(x=>({...x,sheet:x.sheet+offset})));
     for(const key of ['usedArea','stockArea','wasteArea','cutLength','cutCount','reusableArea','placed','total','iterations'])output[key]+=r[key];

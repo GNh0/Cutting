@@ -45,7 +45,7 @@ test('rank is an independent value array and inverse comparisons reverse the dec
   assert.equal(compareResultQuality(a,b,'cuts'),-compareResultQuality(b,a,'cuts'));
 });
 
-const material=extra=>({placed:2,unplaced:[],stockArea:10000,usedArea:6000,reusableArea:3000,largestRemnant:3000,bins:[{stock:{w:100,h:100}}],remnants:[],settings:{trim:0,kerf:0},cutLength:0,iterations:1,...extra});
+const material=extra=>({placed:2,unplaced:[],stockArea:10000,usedArea:6000,reusableArea:3000,largestRemnant:3000,bins:[{stock:{w:100,h:100},cuts:[]}],remnants:[],settings:{trim:0,kerf:0},cutLength:0,iterations:1,...extra});
 
 test('material comparison prefers fulfilling the requested parts before apparently higher yield',()=>{
   assert.equal(compareMaterialQuality(material(),material({placed:1,unplaced:[{w:10,h:10}],stockArea:100,usedArea:100,reusableArea:0,largestRemnant:0})),-1);
@@ -64,7 +64,7 @@ test('material ties ignore execution time, cut count and cut length',()=>{
 });
 
 test('loss accounts for trim, kerf and small scraps without charging reusable remnants as waste',()=>{
-  const r=material({usedArea:3600,reusableArea:4320,largestRemnant:4320,settings:{trim:5,kerf:2},cutLength:90,remnants:[{w:48,h:90,reusable:true}]});
+  const r=material({usedArea:3600,reusableArea:4320,largestRemnant:4320,settings:{trim:5,kerf:2},bins:[{stock:{w:100,h:100},cuts:[{length:90,kerf:2}]}],cutLength:90,remnants:[{w:48,h:90,reusable:true}]});
   const m=materialMetrics(r);
   assert.equal(m.utilizationPercent,36);
   assert.equal(m.nonReusableLoss,2080);

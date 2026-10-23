@@ -263,14 +263,59 @@
       ]
     }
   ],
-  "coverage": "Partial. Direction/level selection paths observed. Original packing-core formula and result equivalence not recovered. Full derived-image auto-analysis exceeded 330-second deadline. Focused Ghidra noanalysis decompilation followed exact selected entries; recovered function boundaries/types can be incomplete.",
+  "coverage": "Partial native placement port. Focused Ghidra passes recovered sorting, strip filling, split topologies, merge predicates, prefix completion comparison and the dynamic large-piece factor. Full integer conversion, rotation retry state and arbitrary-input native executable equivalence remain unverified.",
   "verification": {
-    "testsPassed": 95,
-    "complexPhysicalAuditsPassed": 3000,
-    "browserVersionSelectionAndReloadChecked": true,
-    "materialLossAuditsPassed": 3000,
-    "independentRandomInputs": 1000,
+    "testsPassed": 114,
+    "complexPhysicalAuditsPassed": 300,
+    "materialLossAuditsPassed": 300,
+    "independentRandomInputs": 100,
+    "versionsPerInput": 3,
     "quality": "thorough",
-    "independentReportAuditPassed": true
+    "v1CompleteResultComparisons": 330,
+    "v1Unchanged": true,
+    "originalExecutablePairedRandomTest": false
+  },
+  "nativePlacementPort": {
+    "date": "2026-10-23",
+    "imageSha256": "6c22e6bed6ef6468d75d094725895c8429a307af8e17f9251fc85f304a05c068",
+    "analysis": "Direct Ghidra focused passes after REA bootstrap; no new REA Evidence ID claimed",
+    "targetAccess": "Read-only capture of already-running user process; no patches or DBF writes",
+    "functions": [
+      "0043ed38",
+      "00594cc8",
+      "005952f4",
+      "0057daf4",
+      "0057df6c",
+      "00593e1c",
+      "0058551c",
+      "00592278",
+      "0057cbd0",
+      "0057c354",
+      "0057d73c",
+      "0057d524",
+      "0057a9c0",
+      "0057b494",
+      "004c3de4",
+      "0058810c",
+      "007a8010",
+      "007a8cf0",
+      "007a81e4"
+    ],
+    "implemented": [
+      "descending original area and reverse row order ties",
+      "same-part repeated-axis fill ratio",
+      "rotation and strict ties",
+      "two residual topologies",
+      "unexecuted native free-region merge predicates",
+      "completed-prefix trial comparison",
+      "physical cut rebuild with terminal kerf clipping",
+      "dynamic large-part cutoff: max(2, ceil(longest usable sheet side / maximum individually permitted input width))"
+    ],
+    "unknowns": [
+      "complete integer unit conversion",
+      "entire rotation retry state",
+      "all original UI options and arbitrary-input output equivalence"
+    ],
+    "privateEvidenceNotPublished": true
   }
 }

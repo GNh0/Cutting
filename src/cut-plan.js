@@ -1,5 +1,5 @@
 // Rebuild a guillotine tree for fixed part positions; never join cuts across detached sheets.
-import {scheduleCutTree,cutMotion} from './cut-order.js?v=810122f1dba4';
+import {scheduleCutTree,cutMotion} from './cut-order.js?v=45e601b7291f';
 const EPS=1e-7;
 const near=(a,b)=>Math.abs(a-b)<EPS;
 const reusable=(r,min)=>Math.min(r.w,r.h)>=min-EPS?r.w*r.h:0;
@@ -16,7 +16,7 @@ export function orderCutPlan(bin,settings){
   const route=scheduleCutTree(root,{x:t,y:t});
   return {...bin,cuts:route.cuts,cutMotion:{before:cutMotion(bin.cuts,{x:t,y:t}),after:cutMotion(route.cuts,{x:t,y:t}),exactOrder:route.exact}};
 }
-export function sharedCutPlan(bin,settings,{maxStates=6000,onSearch=()=>{}}={}){
+export function sharedCutPlan(bin,settings,{maxStates=6000,onSearch=()=>{},rebuild=false,edgeKerf=false}={}){
   if(bin.parts.length<2||bin.parts.length>48)return null;
   const k=settings.kerf,min=settings.minRemnant??100,memo=new Map();let states=0,candidatesExamined=0,capped=false,alternativesTruncated=false;
   const alternativeLimit=bin.parts.length<=6?24:0;
@@ -43,22 +43,23 @@ export function sharedCutPlan(bin,settings,{maxStates=6000,onSearch=()=>{}}={}){
       const size=axis==='x'?'w':'h',other=axis==='x'?'h':'w';
       const positions=[...new Set(ids.flatMap(i=>{const p=bin.parts[i];return [p[axis]+p[size],p[axis]-k];}))].sort((a,b)=>a-b);
       for(const pos of positions){
-        if(pos<=r[axis]+EPS||pos+k>r[axis]+r[size]+EPS)continue;
+        if(pos<=r[axis]+EPS||(edgeKerf?pos>r[axis]+r[size]-EPS:pos+k>r[axis]+r[size]+EPS))continue;
+        const actualKerf=edgeKerf?Math.min(k,r[axis]+r[size]-pos):k;
         const first=[],second=[];let clear=true;
-        for(const i of ids){const p=bin.parts[i];if(p[axis]+p[size]<=pos+EPS)first.push(i);else if(p[axis]>=pos+k-EPS)second.push(i);else{clear=false;break;}}
+        for(const i of ids){const p=bin.parts[i];if(p[axis]+p[size]<=pos+EPS)first.push(i);else if(p[axis]>=pos+actualKerf-EPS)second.push(i);else{clear=false;break;}}
         if(!clear)continue;
-        candidates.push({axis,size,other,pos,first,second,balance:Math.min(first.length,second.length)});
+        candidates.push({axis,size,other,pos,actualKerf,first,second,balance:Math.min(first.length,second.length)});
       }
     }
     candidates.sort((a,b)=>b.balance-a.balance||a.axis.localeCompare(b.axis)||a.pos-b.pos);
     let best=null,baseline=null,alternatives=[];
     for(const c of candidates){
       candidatesExamined++;
-      const a={...r,[c.size]:c.pos-r[c.axis]},b={...r,[c.axis]:c.pos+k,[c.size]:Math.max(0,r[c.axis]+r[c.size]-c.pos-k)};
+      const a={...r,[c.size]:c.pos-r[c.axis]},b={...r,[c.axis]:c.pos+c.actualKerf,[c.size]:Math.max(0,r[c.axis]+r[c.size]-c.pos-c.actualKerf)};
       const left=solve(a,c.first);if(!left)continue;
       const right=b[c.size]>EPS?solve(b,c.second):pair(empty);if(!right)continue;
       const partInstances=ids.filter(i=>{const p=bin.parts[i];return near(p[c.axis]+p[c.size],c.pos)||near(p[c.axis],c.pos+k);}).map(i=>bin.parts[i].instance);
-      const cut={axis:c.axis,x:c.axis==='x'?c.pos:r.x,y:c.axis==='y'?c.pos:r.y,length:r[c.other],kerf:k,partInstance:partInstances.length===1?partInstances[0]:null,partInstances};
+      const cut={axis:c.axis,x:c.axis==='x'?c.pos:r.x,y:c.axis==='y'?c.pos:r.y,length:r[c.other],kerf:c.actualKerf,...(edgeKerf?{nominalKerf:k}:{}),partInstance:partInstances.length===1?partInstances[0]:null,partInstances};
       const covered=bin.cuts.filter(old=>old.axis===cut.axis&&near(old[cut.axis],cut[cut.axis])&&(cut.axis==='x'?old.y>=cut.y-EPS&&old.y+old.length<=cut.y+cut.length+EPS:old.x>=cut.x-EPS&&old.x+old.length<=cut.x+cut.length+EPS)).length;
       for(const one of left.choices)for(const two of right.choices){
         const p={count:1+one.count+two.count,length:cut.length+one.length+two.length,joins:Math.max(0,covered-1)+one.joins+two.joins,longStrokes:cut.length**2+one.longStrokes+two.longStrokes,area:one.area+two.area,largest:Math.max(one.largest,two.largest),free:[...one.free,...two.free],cuts:[cut,...one.cuts,...two.cuts],tree:{cut,first:one.tree,second:two.tree},origin:{x:r.x,y:r.y}};
@@ -79,10 +80,10 @@ export function sharedCutPlan(bin,settings,{maxStates=6000,onSearch=()=>{}}={}){
   const oldArea=bin.free.reduce((n,f)=>n+reusable(f,min),0),oldLargest=Math.max(0,...bin.free.map(f=>reusable(f,min)));
   // Keep the chosen residual quality in area/remnant modes; cut-priority explicitly trades it.
   const residualOK=settings.priority==='cuts'||(settings.priority==='remnant'?(r.largest>oldLargest+EPS||near(r.largest,oldLargest)&&r.area>=oldArea-EPS):r.area+.1*r.largest>=oldArea+.1*oldLargest-EPS);
-  if(!residualOK||r.count>bin.cuts.length)return null;
+  if(!rebuild&&(!residualOK||r.count>bin.cuts.length))return null;
   const planned=route(r),cuts=planned.cuts;
   // On equivalent geometry costs, retain the original tree if its ordered route is better.
-  if(r.count===bin.cuts.length&&near(r.area,oldArea)&&near(r.largest,oldLargest)){
+  if(!rebuild&&r.count===bin.cuts.length&&near(r.area,oldArea)&&near(r.largest,oldLargest)){
     const original=orderCutPlan(bin,settings).cutMotion?.after;
     const totalDistance=planned.distance+r.length;
     if(original&&(original.totalDistance<totalDistance-EPS||near(original.totalDistance,totalDistance)&&original.turns<planned.turns))return null;

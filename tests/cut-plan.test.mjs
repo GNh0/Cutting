@@ -56,7 +56,8 @@ test('ordering keeps parent-before-child dependencies and all physical cuts even
 
 test('the actual 1610x610 Chrome case matches all minimum-cut trees and every legal order',()=>{
   const p=user1610Project(),layout=optimize(p,()=>{},{refineCuts:false}),bin=layout.bins[0];
-  assert.equal(bin.parts.length,6);auditResult({...layout,bins:[{...bin,cuts:oldBrowserCuts}]},p);
+  // Historical alternatives carry their recorded cuts, not the modern plan's remnants.
+  assert.equal(bin.parts.length,6);auditResult({...layout,bins:[{...bin,free:undefined,cuts:oldBrowserCuts}]},p);
   let search;const after=sharedCutPlan(bin,p.settings,{maxStates:1000000,onSearch:s=>search=s});
   assert.equal(search.capped,false);assert.equal(search.alternativesTruncated,false);assert.equal(after.cuts.length,8);assert.deepEqual(after.parts,bin.parts);auditResult({...layout,bins:[after]},p);
   const oracle=minimumCutOracle(bin,3);assert.equal(oracle.count,8);assert.equal(oracle.minimumCountTrees,19);assert.equal(oracle.trees,19);assert.equal(oracle.orders,659);
@@ -69,8 +70,8 @@ test('the actual 1610x610 Chrome case matches all minimum-cut trees and every le
   // Joining rows 7/8 is possible before splitting their shared middle boundary,
   // but the two resulting fragments then require separate x=966 strokes: still 8.
   const joined=[['x',163,0,610],['y',0,564,163],['x',1533,0,610],['y',166,300,1367],['x',966,0,300],['x',80,0,564],['y',166,603,1367],['x',966,303,300]].map(([axis,x,y,length])=>({axis,x,y,length,kerf:3}));
-  auditResult({...layout,bins:[{...bin,cuts:joined}]},p);assert.ok(cutMotion(joined).distance>after.cutMotion.after.distance);
+  auditResult({...layout,bins:[{...bin,free:undefined,cuts:joined}]},p);assert.ok(cutMotion(joined).distance>after.cutMotion.after.distance);
   // Simply deleting row 8 and extending row 7 after x=966 is physically impossible.
   const impossible=oldBrowserCuts.slice(0,7).map(c=>({...c}));impossible[6].length=1367;
-  assert.throws(()=>auditResult({...layout,bins:[{...bin,cuts:impossible}]},p),/physical fragment/);
+  assert.throws(()=>auditResult({...layout,bins:[{...bin,free:undefined,cuts:impossible}]},p),/physical fragment/);
 });

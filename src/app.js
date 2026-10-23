@@ -1,9 +1,10 @@
-import {validateProject} from './optimizer.js?v=810122f1dba4';
-import {csv,importRows,readProject} from './io.js?v=810122f1dba4';
-import {dimensionGeometry,rotateBinForView} from './diagram.js?v=810122f1dba4';
-import {groupRemnants,carryRemnantStock} from './remnants.js?v=810122f1dba4';
-import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=810122f1dba4';
-import {CALCULATION_VERSIONS,resolveCalculationVersion} from './calculation-versions.js?v=810122f1dba4';
+import {validateProject} from './optimizer.js?v=45e601b7291f';
+import {csv,importRows,readProject} from './io.js?v=45e601b7291f';
+import {dimensionGeometry,rotateBinForView} from './diagram.js?v=45e601b7291f';
+import {groupRemnants,carryRemnantStock} from './remnants.js?v=45e601b7291f';
+import {materialInfo,materialKey,materialLabel,materialGroups,upgradeProject} from './materials.js?v=45e601b7291f';
+import {CALCULATION_VERSIONS,resolveCalculationVersion} from './calculation-versions.js?v=45e601b7291f';
+import {kerfArea} from './calculation-comparison.js?v=45e601b7291f';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -185,7 +186,7 @@ function edgeTotal(){const totals=new Map();for(const bin of result.bins)for(con
 function renderSummary(){
   const r=result;
   const groupTable=`<h3>그룹별 배치 결과</h3><div class="table-scroll"><table><thead><tr><th>두께·재질·제조사·LOT</th><th>원판</th><th>배치 / 미배치 포함</th><th>미배치</th></tr></thead><tbody>${r.groups.map(g=>`<tr><td>${esc(groupLabel(g))}</td><td>${g.sheets.length}장</td><td>${g.placed} / ${g.total}</td><td>${g.unplaced}개</td></tr>`).join('')}</tbody></table></div>`;
-  $('#result-body').innerHTML=`<div class="summary-content"><div class="detail-list"><div class="detail-stat">배치한 부재 면적<strong>${area(r.usedArea)}</strong></div><div class="detail-stat">사용한 원판 면적<strong>${area(r.stockArea)}</strong></div><div class="detail-stat">톱날 소모 면적<strong>${area(r.cutLength*r.settings.kerf)}</strong></div><div class="detail-stat">톱날 / 가장자리 여유<strong>${dim(r.settings.kerf)} / ${dim(r.settings.trim)} ${unit()}</strong></div></div>${groupTable}<h3>원판별 결과</h3><div class="table-scroll"><table><thead><tr><th>원판</th><th>두께·재질·제조사·LOT</th><th>부재</th><th>이용률</th><th>절단</th><th>길이</th></tr></thead><tbody>${r.bins.map((b,i)=>{const a=b.parts.reduce((n,p)=>n+p.w*p.h,0);return `<tr><td>${i+1}. ${esc(b.stock.label)}</td><td>${esc(groupLabel(b.stock))}</td><td>${b.parts.length}개</td><td>${n(a/(b.stock.w*b.stock.h)*100,1)}%</td><td>${b.cuts.length}회</td><td>${n(b.cuts.reduce((n,c)=>n+c.length,0)/1000,2)}m</td></tr>`;}).join('')}</tbody></table></div><h3>남은 원판 재고</h3><div class="table-scroll"><table><thead><tr><th>원판</th><th>치수 (${unit()})</th><th>사용 / 보유</th><th>남은 수량</th></tr></thead><tbody>${resultProject.stocks.filter(s=>s.enabled!==false).map(s=>{const used=r.bins.filter(b=>b.stock.id===s.id).length;return `<tr><td>${esc(s.label)}<br><small>${esc(groupLabel(s))}</small></td><td>${dim(s.w)} × ${dim(s.h)}</td><td>${used} / ${s.qty}</td><td>${s.qty-used}장</td></tr>`;}).join('')}</tbody></table></div><h3>엣지밴딩 필요 길이</h3>${edgeTotal().length?`<table><thead><tr><th>재질</th><th>길이 (여분 제외)</th></tr></thead><tbody>${edgeTotal().map(([m,l])=>`<tr><td>${esc(m||'재질 미지정')}</td><td>${n(l/1000,3)} m</td></tr>`).join('')}</tbody></table>`:'<p class="section-note">밴딩이 지정된 부재가 없습니다. 부재의 상세 설정(···)에서 지정하세요.</p>'}${unplacedHTML()}<p class="section-note">${r.iterations}회 결정적 휴리스틱 탐색 · 원판의 가장자리 여유와 톱날 소모량은 낭비 면적에 포함됩니다. 정재단 절단은 횟수·길이에서 제외됩니다. 이용률은 배치한 부재 면적 ÷ 사용한 전체 원판 면적입니다.</p><button class="button" id="export-report">${icon('download')} 결과 CSV 내보내기</button></div>`;
+  $('#result-body').innerHTML=`<div class="summary-content"><div class="detail-list"><div class="detail-stat">배치한 부재 면적<strong>${area(r.usedArea)}</strong></div><div class="detail-stat">사용한 원판 면적<strong>${area(r.stockArea)}</strong></div><div class="detail-stat">톱날 소모 면적<strong>${area(kerfArea(r))}</strong></div><div class="detail-stat">톱날 / 가장자리 여유<strong>${dim(r.settings.kerf)} / ${dim(r.settings.trim)} ${unit()}</strong></div></div>${groupTable}<h3>원판별 결과</h3><div class="table-scroll"><table><thead><tr><th>원판</th><th>두께·재질·제조사·LOT</th><th>부재</th><th>이용률</th><th>절단</th><th>길이</th></tr></thead><tbody>${r.bins.map((b,i)=>{const a=b.parts.reduce((n,p)=>n+p.w*p.h,0);return `<tr><td>${i+1}. ${esc(b.stock.label)}</td><td>${esc(groupLabel(b.stock))}</td><td>${b.parts.length}개</td><td>${n(a/(b.stock.w*b.stock.h)*100,1)}%</td><td>${b.cuts.length}회</td><td>${n(b.cuts.reduce((n,c)=>n+c.length,0)/1000,2)}m</td></tr>`;}).join('')}</tbody></table></div><h3>남은 원판 재고</h3><div class="table-scroll"><table><thead><tr><th>원판</th><th>치수 (${unit()})</th><th>사용 / 보유</th><th>남은 수량</th></tr></thead><tbody>${resultProject.stocks.filter(s=>s.enabled!==false).map(s=>{const used=r.bins.filter(b=>b.stock.id===s.id).length;return `<tr><td>${esc(s.label)}<br><small>${esc(groupLabel(s))}</small></td><td>${dim(s.w)} × ${dim(s.h)}</td><td>${used} / ${s.qty}</td><td>${s.qty-used}장</td></tr>`;}).join('')}</tbody></table></div><h3>엣지밴딩 필요 길이</h3>${edgeTotal().length?`<table><thead><tr><th>재질</th><th>길이 (여분 제외)</th></tr></thead><tbody>${edgeTotal().map(([m,l])=>`<tr><td>${esc(m||'재질 미지정')}</td><td>${n(l/1000,3)} m</td></tr>`).join('')}</tbody></table>`:'<p class="section-note">밴딩이 지정된 부재가 없습니다. 부재의 상세 설정(···)에서 지정하세요.</p>'}${unplacedHTML()}<p class="section-note">탐색 후보 ${r.iterations}개 비교 · 원판의 가장자리 여유와 톱날 소모량은 낭비 면적에 포함됩니다. 정재단 절단은 횟수·길이에서 제외됩니다. 이용률은 배치한 부재 면적 ÷ 사용한 전체 원판 면적입니다.</p><button class="button" id="export-report">${icon('download')} 결과 CSV 내보내기</button></div>`;
 }
 function renderAll(){renderEditor();renderSettings();renderResults();}
 function setBusy(busy){document.body.classList.toggle('busy',busy);$('#optimize').disabled=busy;$('#optimize-label').textContent=busy?'더 나은 배치를 찾고 있어요':'최적 배치 계산';$('#cancel').hidden=!busy;$('#progress').hidden=!busy;if(busy)$('#progress>div').style.width='0%';}
@@ -195,7 +196,7 @@ function calculate(){
   const errors=validateProject(project);if(errors.length){notify(errors.slice(0,8).join('\n'),true);return;}
   cancelCalculation(false);setBusy(true);const snapshot=structuredClone(project);
   try{
-    worker=new Worker(new URL('./worker.js?v=810122f1dba4',import.meta.url),{type:'module'});
+    worker=new Worker(new URL('./worker.js?v=45e601b7291f',import.meta.url),{type:'module'});
     worker.onmessage=({data})=>{
       if(data.type==='progress'){$('#progress>div').style.width=data.percent+'%';return;}
       if(data.type==='done'){result=data.result;resultProject=snapshot;dirty=false;selectedSheet=0;selectedPart=null;selectedCut=null;cancelCalculation(false);renderResults();persist();notify(result.unplaced.length?`${result.placed}개 배치 · ${result.unplaced.length}개 미배치`:`${result.total}개 부재를 ${result.bins.length}장에 배치했습니다.`);}
