@@ -7,7 +7,7 @@
   <meta name="description" content="개인용 판재 절단 최적화. 톱날 두께와 재질, 결 방향을 고려한 배치도를 브라우저에서 만들고 저장하세요.">
   <title>Cutting — 판재 절단 최적화</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=0335af4f5072">
+  <link rel="stylesheet" href="./styles.css?v=69c50f2883e5">
 </head>
 <body>
   <div class="app-shell">
@@ -55,6 +55,8 @@
             </section>
             <section class="card settings-card">
               <div class="card-heading"><h2><span data-icon="sliders"></span>최적화 설정</h2><span class="small-badge">내 작업에 맞게</span></div>
+              <label class="select-row calculation-select">계산식 버전<select id="calculationVersion" aria-label="계산식 버전" aria-describedby="calculation-version-note"></select></label>
+              <p class="field-note" id="calculation-version-note"></p>
               <div class="settings-numbers"><label>톱날 두께 <span class="tooltip" title="절단할 때 톱날이 소모하는 폭입니다.">ⓘ</span><div class="number-with-unit"><input type="number" id="kerf" min="0" step="any" aria-label="톱날 두께"><span class="unit-label">mm</span></div></label><label>가장자리 여유 <span class="tooltip" title="원판의 네 가장자리에서 사용할 수 없는 영역입니다. 정재단 작업은 절단 순서에서 제외됩니다.">ⓘ</span><div class="number-with-unit"><input type="number" id="trim" min="0" step="any" aria-label="가장자리 여유"><span class="unit-label">mm</span></div></label></div>
               <label class="switch-row"><span><strong>부재 회전 허용</strong><small>공간에 맞춰 90° 회전</small></span><input type="checkbox" role="switch" id="rotate"><span class="switch"></span></label>
               <p class="matching-rule">두께·재질은 필수이며 원판과 일치해야 합니다. 부재의 제조사·LOT은 입력한 항목만 일치해야 하고, 비워 둔 항목은 제한 없이 원판을 선택합니다.</p>
@@ -69,6 +71,7 @@
             <section class="card results-card">
               <div class="result-toolbar"><div class="tabs result-tabs" role="tablist" aria-label="결과 보기"><button role="tab" aria-selected="true" data-result-tab="layout"><span data-icon="layout"></span>배치도</button><button role="tab" aria-selected="false" data-result-tab="cuts"><span data-icon="scissors"></span>절단 순서</button><button role="tab" aria-selected="false" data-result-tab="summary"><span data-icon="chart"></span>상세 통계</button></div><div class="result-exports" role="group" aria-label="결과 내보내기"><span id="export-target" class="export-target">내보내기</span><button class="button" id="toolbar-svg" title="선택 원판 SVG 저장" disabled>SVG</button><button class="button" id="toolbar-png" title="선택 원판 PNG 저장" disabled>PNG</button><button class="button" id="print-result" title="PDF 저장 범위 선택" disabled><span data-icon="printer"></span>PDF</button></div></div>
               <div id="result-notice" role="status"></div>
+              <div id="result-version" class="result-version" hidden></div>
               <div id="result-body"></div>
             </section>
             <div class="result-footnote"><span data-icon="info"></span>직선으로 끝까지 절단하는 길로틴 방식 · 여러 후보 중 가장 나은 배치를 선택합니다.</div>
@@ -82,6 +85,6 @@
   <input type="file" id="project-file" accept=".json,application/json" hidden><input type="file" id="csv-file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden>
   <div class="toast" id="toast" role="status" hidden></div>
   <section id="print-area"></section>
-  <script type="module" src="./src/app.js?v=0335af4f5072"></script>
+  <script type="module" src="./src/app.js?v=69c50f2883e5"></script>
 </body>
 </html>

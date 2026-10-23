@@ -1,0 +1,273 @@
+{
+  "date": "2026-10-23",
+  "reaVersion": "6.7.0",
+  "officialSource": "https://github.com/morluto/rea",
+  "setupStatus": "ready",
+  "doctorHealthy": true,
+  "availableProviders": [
+    "ghidra"
+  ],
+  "ghidra": {
+    "version": "12.1.4",
+    "archive": "ghidra_12.1.4_PUBLIC_20260921.zip",
+    "digest": "sha256:ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db"
+  },
+  "jdk": {
+    "name": "OpenJDK21U-jdk_x64_windows_hotspot_21.0.12.1_1.zip",
+    "sha256": "f9d6e191ab098c0d416e7d588a24420a8621cd2f4720dab2459b8b7b2d2d8b4e"
+  },
+  "originalREA": {
+    "evidence_id": "ev_7629addd367778647689e47f91fc47952f0fdc41888a6e72d0e3842fe0985902",
+    "sourceSha256": "8c5361f92ee94aa4d813d53806c834d9ce10eb660f925b9136de8bbd577a50e4",
+    "analysisProfileDigest": "888cccbc77625a98c11642d4dee4c0625a8f182357e0cefd6105984b0a486afd",
+    "observations": {
+      "document": "target-8c5361f92ee9.exe",
+      "image_base": "0x400000",
+      "segments": [
+        {
+          "name": "Headers",
+          "start": "0x400000",
+          "end": "0x400600",
+          "length": 1536,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.0",
+          "start": "0x401000",
+          "end": "0x825000",
+          "length": 4341760,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.1",
+          "start": "0x825000",
+          "end": "0x8e5000",
+          "length": 786432,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.2",
+          "start": "0x8e5000",
+          "end": "0x8e6000",
+          "length": 4096,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.3",
+          "start": "0x8e6000",
+          "end": "0x8e7000",
+          "length": 4096,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.4",
+          "start": "0x8e7000",
+          "end": "0x8eb000",
+          "length": 16384,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.5",
+          "start": "0x8eb000",
+          "end": "0x938000",
+          "length": 315392,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": ".rsrc",
+          "start": "0x938000",
+          "end": "0xa65000",
+          "length": 1232896,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": "SECTION.7",
+          "start": "0xa65000",
+          "end": "0xaa4000",
+          "length": 258048,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": ".smrfdky",
+          "start": "0xaa4000",
+          "end": "0xb35000",
+          "length": 593920,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        },
+        {
+          "name": ".adata",
+          "start": "0xb35000",
+          "end": "0xb36000",
+          "length": 4096,
+          "image_base": "0x400000",
+          "address_space": "ram"
+        }
+      ],
+      "segment_count": 11,
+      "procedure_count": 34,
+      "string_count": 5777
+    },
+    "limitations": [
+      "Derived by an REA composed workflow.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Counts use the complete defined-string inventory and the same local/external function inventory as list_strings and list_procedures. They do not establish discovery of undefined strings or unidentified functions.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Memory-block end addresses are exclusive; segment lengths use those observed address coordinates.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Only Ghidra-defined string Data is observed; packed or undefined string bytes may be absent. Completeness applies to that inventory, and an empty search does not establish that text is absent from the artifact. If an address is known, use read_bytes and xrefs to inspect bytes and references.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: The Windows bridge uses authenticated IPv4 loopback because Node path-based IPC does not expose Java AF_UNIX sockets; the endpoint file contains no bearer token.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Windows Ghidra P0 accepts native x86, x86-64, ARMNT (Thumb-2) and ARM64 PE applications and DLLs, and explicitly selected raw 6502 images; managed, hostile, sensitive, and mutable-path targets are unsupported.",
+      "Ghidra (ghidra 12.1.4) read_binary_inventory_summary: Windows sessions require the matching packaged Windows x64 native addon, local NTFS targets and runtimes, and Windows 10 or later. Native handles enforce path admission, private DACLs, and Job Object ownership automatically."
+    ]
+  },
+  "runtimeCapture": {
+    "source": "C:\\Program Files (x86)\\Smart2DCutting\\Smart2DCuttingDEMO.exe",
+    "sourceSha256": "8c5361f92ee94aa4d813d53806c834d9ce10eb660f925b9136de8bbd577a50e4",
+    "runtimePid": 39484,
+    "imageBase": "0x400000",
+    "imageSize": 7561216,
+    "unreadablePages": [],
+    "derivedImage": "C:\\Users\\KONEIT\\Desktop\\Source\\Cutting\\research\\smart2d-runtime-image.exe",
+    "derivedSha256": "279fed951b4c369a80d35e065309ed9bb4313e0ff2c282abc816eb232f50585e",
+    "scope": "Read process memory after normal startup. No executable bytes, license checks or trial limits patched. Runtime-derived image is not original source.",
+    "processExited": true
+  },
+  "focusedGhidraExports": [
+    {
+      "file": "smart2d-handler.json",
+      "sha256": "938a27bf7d5f41f5a8fad9b468f16ab16ecfb568de40288ab13df7b91bb8fd54",
+      "programSha256": "279fed951b4c369a80d35e065309ed9bb4313e0ff2c282abc816eb232f50585e",
+      "language": "x86:LE:32:default",
+      "compiler": "borlandcpp",
+      "functions": [
+        {
+          "entry": "0040e218",
+          "complete": true,
+          "pseudocodeCharacters": 2055,
+          "appCallees": [
+            "00405ca4",
+            "004a1dac",
+            "004b3440",
+            "004b6cb0",
+            "004bb7c4",
+            "004c79a8",
+            "0059fc6c"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "smart2d-compute.json",
+      "sha256": "a0a666e4ca09e01f9636e40f7251726228866f8fdad6d1eaadce57d1c4f92d97",
+      "programSha256": "279fed951b4c369a80d35e065309ed9bb4313e0ff2c282abc816eb232f50585e",
+      "language": "x86:LE:32:default",
+      "compiler": "borlandcpp",
+      "functions": [
+        {
+          "entry": "004b6cb0",
+          "complete": true,
+          "pseudocodeCharacters": 5403,
+          "appCallees": [
+            "004bbe88",
+            "004c18f8"
+          ]
+        },
+        {
+          "entry": "004b3440",
+          "complete": true,
+          "pseudocodeCharacters": 49455,
+          "appCallees": [
+            "00405ca4",
+            "0040dfdc",
+            "0040fd58",
+            "0049b1c4",
+            "004a4f00",
+            "004bb7c4",
+            "004bbe88",
+            "0058ad54"
+          ]
+        },
+        {
+          "entry": "004a1dac",
+          "complete": true,
+          "pseudocodeCharacters": 42296,
+          "appCallees": [
+            "00405bb0",
+            "0040fd58",
+            "0041d9c4",
+            "00446dcc",
+            "0044af8c",
+            "004725e8",
+            "00472ac8",
+            "0047bf94",
+            "004b97dc",
+            "004ba388",
+            "004bbd0c"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "smart2d-core.json",
+      "sha256": "de557956a66864dfdfe76ffce83516f46ff8e222116c7f86a088a48d819fd7a2",
+      "programSha256": "279fed951b4c369a80d35e065309ed9bb4313e0ff2c282abc816eb232f50585e",
+      "language": "x86:LE:32:default",
+      "compiler": "borlandcpp",
+      "functions": [
+        {
+          "entry": "00405ca4",
+          "complete": true,
+          "pseudocodeCharacters": 2125,
+          "appCallees": [
+            "004063d4",
+            "0040fd58",
+            "004a4f00"
+          ]
+        },
+        {
+          "entry": "004bb7c4",
+          "complete": true,
+          "pseudocodeCharacters": 2101,
+          "appCallees": [
+            "004bbe88"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "smart2d-engine-entry.json",
+      "sha256": "44209f208fb6e10bd70247fcdd58cc606029a43d0dead58600f54fb075a044ab",
+      "programSha256": "279fed951b4c369a80d35e065309ed9bb4313e0ff2c282abc816eb232f50585e",
+      "language": "x86:LE:32:default",
+      "compiler": "borlandcpp",
+      "functions": [
+        {
+          "entry": "004063d4",
+          "complete": true,
+          "pseudocodeCharacters": 7916,
+          "appCallees": [
+            "00406635"
+          ]
+        }
+      ]
+    }
+  ],
+  "coverage": "Partial. Direction/level selection paths observed. Original packing-core formula and result equivalence not recovered. Full derived-image auto-analysis exceeded 330-second deadline. Focused Ghidra noanalysis decompilation followed exact selected entries; recovered function boundaries/types can be incomplete.",
+  "verification": {
+    "testsPassed": 82,
+    "complexPhysicalAuditsPassed": 216,
+    "browserVersionSelectionAndReloadChecked": true,
+    "benchmark": "version-benchmark.json"
+  }
+}

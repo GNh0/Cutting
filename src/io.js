@@ -1,5 +1,6 @@
-import { validateProject, LIMIT } from './optimizer.js?v=0335af4f5072';
-import {upgradeProject} from './materials.js?v=0335af4f5072';
+import { validateProject, LIMIT } from './optimizer.js?v=69c50f2883e5';
+import {upgradeProject} from './materials.js?v=69c50f2883e5';
+import {resolveCalculationVersion} from './calculation-versions.js?v=69c50f2883e5';
 export function parseDelimited(text) {
   text=text.replace(/^\uFEFF/,'');
   const first=text.split(/\r?\n/)[0];
@@ -44,6 +45,7 @@ export function csv(rows,factor=1) {
 export function readProject(text) {
   const p=upgradeProject(JSON.parse(text));
   if(p.version!==1)throw new Error('지원하지 않는 프로젝트 버전입니다.');
+  resolveCalculationVersion(p.settings?.calculationVersion);
   const errors=validateProject(p,{allowIncomplete:true});if(errors.length)throw new Error(errors.join('\n'));
   return p;
 }

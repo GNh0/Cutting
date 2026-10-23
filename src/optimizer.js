@@ -1,6 +1,6 @@
 // Independent guillotine packing engine. All lengths are millimetres.
-import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=0335af4f5072';
-import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=0335af4f5072';
+import {materialKey,materialInfo,materialGroups,materialMatches} from './materials.js?v=69c50f2883e5';
+import {sharedCutPlan,orderCutPlan} from './cut-plan.js?v=69c50f2883e5';
 const EPS = 1e-7;
 export const LIMIT = 1000;
 export function validateProject(project,{allowIncomplete=false}={}) {
@@ -61,7 +61,7 @@ function split(f,o,k,vertical) {
   return {free,cuts};
 }
 const matches=materialMatches;
-function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null) {
+function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null,direction='auto') {
   if(!matches(p,bin.stock,s)) return null;
   let best=null;
   const allOrientations=orientations(p,bin.stock,s);
@@ -70,7 +70,7 @@ function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null
   for(let i=0;i<bin.free.length;i++) for(const o of aligned.length?aligned:allOrientations) {
     const f=bin.free[i];
     if(o.w>f.w+EPS||o.h>f.h+EPS) continue;
-    const preferred=strategy?(grouped?strategy.axis==='x':strategy.axis!=='x'):null;
+    const preferred=direction==='auto'?(strategy?(grouped?strategy.axis==='x':strategy.axis!=='x'):null):direction==='x';
     for(const v of preferred===null?[true,false]:[preferred]) {
       const sp=split(f,o,s.kerf,v); if(!sp) continue;
       const waste=f.w*f.h-o.w*o.h;
@@ -85,7 +85,7 @@ function candidate(p,bin,s,variant,strategy=null,scoringMode=null,collector=null
   return best;
 }
 const nearDimension=(a,b)=>Math.abs(a-b)<EPS;
-function run(pieces,stocks,s,variant,strategy=null,scoringMode=null) {
+function run(pieces,stocks,s,variant,strategy=null,scoringMode=null,direction='auto') {
   const bins=[],unplaced=[],remaining=stocks.map(r=>r.qty);
   const reserveOptions=variant%3===0&&new Set(pieces.map(materialKey)).size>1;
   const pending=new Map(),eligible=new Map();
@@ -95,7 +95,7 @@ function run(pieces,stocks,s,variant,strategy=null,scoringMode=null) {
     const pressure=i=>{let value=0;for(const [id,choices]of eligible)if(id!==p.id&&pending.get(id)>0&&choices.includes(i))value+=pending.get(id)/Math.max(1,choices.reduce((n,j)=>n+remaining[j],0));return value;};
     let chosen=null;
     for(const bin of bins) {
-      const c=candidate(p,bin,s,variant,strategy,scoringMode);
+      const c=candidate(p,bin,s,variant,strategy,scoringMode,null,direction);
       if(c&&(!chosen||c.rank<chosen.c.rank)) chosen={bin,c};
     }
     if(!chosen) {
@@ -105,7 +105,7 @@ function run(pieces,stocks,s,variant,strategy=null,scoringMode=null) {
         const w=stock.w-2*s.trim,h=stock.h-2*s.trim;
         if(w<=0||h<=0) continue;
         const bin={stock,stockIndex:i,free:[{x:s.trim,y:s.trim,w,h}],parts:[],cuts:[]};
-        const c=candidate(p,bin,s,variant,strategy,scoringMode);
+        const c=candidate(p,bin,s,variant,strategy,scoringMode,null,direction);
         const area=stock.w*stock.h,previous=chosen?chosen.bin.stock.w*chosen.bin.stock.h:0;
         const preferLarge=Math.floor(variant/3)%2===1;
         const risk=reserveOptions?pressure(i):0;
@@ -152,6 +152,7 @@ export function optimize(project,onProgress=()=>{},options={}) {
   const errors=validateProject(project); if(errors.length) throw new Error(errors.join('\n'));
   if(options.partition!==false)return optimizeGroups(project,onProgress,options);
   if((options.family||'hybrid')==='hybrid')return optimizeHybrid(project,onProgress,options.budget??(project.settings.quality==='quick'?6:project.settings.quality==='thorough'?48:24),false,options.refineCuts!==false);
+  if(options.family==='smart2d')return optimizeSmart2D(project,onProgress,options);
   const pieces=project.parts.filter(r=>r.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
   const stocks=project.stocks.filter(r=>r.enabled!==false),s=project.settings;
   const iterations=options.budget??(s.quality==='quick'?6:s.quality==='thorough'?48:24);
@@ -185,6 +186,43 @@ export function optimize(project,onProgress=()=>{},options={}) {
   return {...best,iterations,settings:{...s}};
 }
 
+function optimizeSmart2D(project,onProgress,options){
+  // Independent reconstruction of the documented direction/level portfolio.
+  // These ordering and placement scores are Cutting choices, not recovered
+  // Smart2DCutting formulas. Every higher quality keeps all lower candidates.
+  const s=project.settings,variants=s.quality==='quick'?1:s.quality==='balanced'?4:16;
+  const directions=['x','y','auto'],levels=[1,2,3],iterations=variants*9;
+  const pieces=project.parts.filter(p=>p.enabled!==false).flatMap(p=>Array.from({length:p.qty},(_,i)=>({...p,instance:`${p.id}:${i+1}`,originalW:p.w,originalH:p.h})));
+  const stocks=project.stocks.filter(stock=>stock.enabled!==false);
+  const restriction=new Map(project.parts.filter(p=>p.enabled!==false).map(p=>[p.id,{specified:Number(Boolean(p.manufacturer.trim()))+Number(Boolean(p.lot.trim())),choices:stocks.filter(stock=>matches(p,stock)).length}]));
+  const refinementCheckpoints=[];
+  let rawBest=null,rawProfile=null,best=null,selectedProfile=null,done=0;
+  for(let variant=0;variant<variants;variant++)for(const direction of directions)for(const level of levels){
+    const mode=(level-1+Math.floor(variant/4))%8;
+    const key=p=>mode===0?p.w*p.h:mode===1?Math.max(p.w,p.h):mode===2?Math.min(p.w,p.h):mode===3?p.w+p.h:mode===4?p.w:mode===5?p.h:mode===6?Math.abs(p.w-p.h):p.w*p.h/Math.sqrt(Math.max(p.w,p.h));
+    const weight=p=>variant===0?1:1+.2*Math.sin((p.originalW*7+p.originalH*13+p.id.length*31)*(variant+1));
+    const sorted=[...pieces].sort((a,b)=>{
+      const ar=restriction.get(a.id),br=restriction.get(b.id);
+      return br.specified-ar.specified||ar.choices-br.choices||key(b)*weight(b)-key(a)*weight(a)||a.instance.localeCompare(b.instance);
+    });
+    const layout=run(sorted,stocks,s,variant,null,level-1,direction);
+    const profile={direction,level,variant};
+    if(better(layout,rawBest,s.priority,options.rankMode||'balanced')){rawBest=layout;rawProfile=profile;}
+    done++;
+    if(options.refineCuts===false){best=rawBest;selectedProfile=rawProfile;}
+    else if(done===9||done===36||done===144){
+      // Refine only the best raw layout at each retained quality prefix.
+      // Keep earlier physical winners, so increasing quality cannot worsen
+      // the returned objective while requiring at most three refinements.
+      const refined=optimizeCutPlans(rawBest,s);
+      refinementCheckpoints.push(done);
+      if(better(refined,best,s.priority,options.rankMode||'balanced')){best=refined;selectedProfile=rawProfile;}
+    }
+    onProgress(Math.round(done/iterations*100),best||rawBest,profile);
+  }
+  return {...best,iterations,settings:{...s},algorithm:'smart2d',smart2dSearch:{directions,levels,variantsPerProfile:variants,candidates:iterations,selectedProfile,refinementCheckpoints,cutRefinement:options.refineCuts===false?'none':'quality-checkpoints'}};
+}
+
 export function optimizeCutPlans(result,s){
   const bins=result.bins.map(b=>sharedCutPlan(b,s,{maxStates:512})||orderCutPlan(b,s));
   const remnants=bins.flatMap((b,sheet)=>b.free.map((r,index)=>({...r,sheet,index,...materialInfo(b.stock),grain:b.stock.grain,reusable:Math.min(r.w,r.h)>=(s.minRemnant??100)-EPS})));
@@ -201,10 +239,12 @@ function optimizeGroups(project,onProgress,options){
   const components=new Map();requests.forEach((g,i)=>{const key=find(i);if(!components.has(key))components.set(key,{parts:[],stockIds:new Set()});const c=components.get(key);c.parts.push(...g.rows.map(x=>x.row));available[i].forEach(s=>c.stockIds.add(s.id));});
   const groups=[...components.values()];
   const output={bins:[],unplaced:[],remnants:[],groups:[],usedArea:0,stockArea:0,wasteArea:0,cutLength:0,cutCount:0,reusableArea:0,largestRemnant:0,placed:0,total:0,iterations:0,settings:{...project.settings,material:true},algorithm:options.family||'hybrid'};
+  if(options.family==='smart2d')output.searchProfiles=[];
   groups.forEach((g,i)=>{
     const parts=g.parts,matchingStocks=stocks.filter(s=>g.stockIds.has(s.id));
     const layout=matchingStocks.length?optimize({...project,parts,stocks:matchingStocks},percent=>onProgress(Math.round((i+percent/100)/groups.length*100)),{...options,partition:false}):{...run(parts.flatMap(p=>Array.from({length:p.qty},(_,j)=>({...p,instance:`${p.id}:${j+1}`,originalW:p.w,originalH:p.h}))),[],project.settings,0),iterations:0};
-    const r=options.refineCuts===false?layout:optimizeCutPlans(layout,project.settings);
+    const r=options.refineCuts===false||options.family==='smart2d'?layout:optimizeCutPlans(layout,project.settings);
+    if(layout.smart2dSearch)output.searchProfiles.push({component:i,...layout.smart2dSearch});
     const offset=output.bins.length;
     output.bins.push(...r.bins);output.unplaced.push(...r.unplaced);output.remnants.push(...r.remnants.map(x=>({...x,sheet:x.sheet+offset})));
     for(const key of ['usedArea','stockArea','wasteArea','cutLength','cutCount','reusableArea','placed','total','iterations'])output[key]+=r[key];
