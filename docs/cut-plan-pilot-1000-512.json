@@ -1,0 +1,150 @@
+{
+  "scenarios": 1000,
+  "scenarioIndices": [
+    3000000,
+    3000999
+  ],
+  "split": "acceptance",
+  "threads": 4,
+  "maxStates": 512,
+  "hashes": {
+    "src/optimizer.js": "a032052f6049930ff3c240f8c14828841874f4993d2fe8ef223439d0b10084ad",
+    "src/materials.js": "fd3e115f7c2e9436e4b6de9d40570f75341bdca21856d8b9d00a8f7d48a31bbd",
+    "src/cut-plan.js": "75bb1a31309e68b1d6f282ba9bec4a0d459d7f7cdda912bb8d2161d18947c29e"
+  },
+  "wallSeconds": 1.0813776,
+  "boards": 1640,
+  "improvedBoards": 792,
+  "originalCuts": 21225,
+  "newCuts": 19837,
+  "originalCutLength": 14623941,
+  "newCutLength": 14331337.149999999,
+  "statesVisited": 233821,
+  "separatorCandidates": 594825,
+  "cappedBoards": 243,
+  "physicalAudits": 2000,
+  "completedResults": 2000,
+  "examples": [
+    {
+      "index": 3000500,
+      "parts": 11,
+      "before": 18,
+      "after": 14
+    },
+    {
+      "index": 3000502,
+      "parts": 9,
+      "before": 16,
+      "after": 13
+    },
+    {
+      "index": 3000503,
+      "parts": 18,
+      "before": 30,
+      "after": 26
+    },
+    {
+      "index": 3000505,
+      "parts": 13,
+      "before": 20,
+      "after": 16
+    },
+    {
+      "index": 3000506,
+      "parts": 11,
+      "before": 19,
+      "after": 18
+    },
+    {
+      "index": 3000001,
+      "parts": 12,
+      "before": 18,
+      "after": 17
+    },
+    {
+      "index": 3000002,
+      "parts": 16,
+      "before": 26,
+      "after": 25
+    },
+    {
+      "index": 3000003,
+      "parts": 2,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "index": 3000003,
+      "parts": 2,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "index": 3000003,
+      "parts": 2,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "index": 3000254,
+      "parts": 11,
+      "before": 21,
+      "after": 19
+    },
+    {
+      "index": 3000257,
+      "parts": 11,
+      "before": 17,
+      "after": 15
+    },
+    {
+      "index": 3000257,
+      "parts": 10,
+      "before": 16,
+      "after": 15
+    },
+    {
+      "index": 3000258,
+      "parts": 23,
+      "before": 36,
+      "after": 32
+    },
+    {
+      "index": 3000259,
+      "parts": 3,
+      "before": 6,
+      "after": 4
+    },
+    {
+      "index": 3000750,
+      "parts": 11,
+      "before": 19,
+      "after": 18
+    },
+    {
+      "index": 3000751,
+      "parts": 21,
+      "before": 30,
+      "after": 28
+    },
+    {
+      "index": 3000751,
+      "parts": 3,
+      "before": 6,
+      "after": 5
+    },
+    {
+      "index": 3000758,
+      "parts": 7,
+      "before": 12,
+      "after": 12
+    },
+    {
+      "index": 3000761,
+      "parts": 12,
+      "before": 17,
+      "after": 16
+    }
+  ],
+  "scope": "Fixed-layout guillotine reconstruction, preserving original reusable residual score. Cut candidates are partial separator choices, not independent scenarios."
+}

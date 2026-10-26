@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {parseDelimited,importRows,csv,readProject} from '../src/io.js';
+test('quoted commas, quotes, multiline fields and BOM are parsed',()=>{assert.deepEqual(parseDelimited('\uFEFF가로,세로,이름\r\n100,200,"상판, \"\"오크\"\""\r\n200,300,"두\n줄"'),[['가로','세로','이름'],['100','200','상판, "오크"'],['200','300','두\n줄']]);});
+test('TSV pasted from Excel and semicolon CSV work',()=>{assert.equal(importRows('100\t200\t3\t선반')[0].qty,3);assert.equal(importRows('가로;세로;수량\n100;200;2')[0].w,100);});
+test('import respects selected display units',()=>assert.equal(importRows('가로,세로,수량\n10,20,2',25.4)[0].w,254));
+test('CLO length/width/quantity CSV maps consistently',()=>{const [p]=importRows('Length,Width,Qty,Label,Material,Orientation\n800,300,2,Shelf,Plywood,Horizontal');assert.equal(p.w,800);assert.equal(p.h,300);assert.equal(p.grain,'x');});
+test('CSV round trip retains values, disabled state, grain and edges',()=>{const original={w:600,h:300,qty:3,label:'측판, "A"',thickness:18,manufacturer:'A사',lot:'L01',material:'자작 합판',grain:'y',enabled:false,rotate:false,edges:{top:true,bottom:false,left:true,right:false}};const [p]=importRows(csv([original],10),10);for(const key of ['w','h','qty','label','material','thickness','manufacturer','lot','grain','enabled','rotate','edges'])assert.deepEqual(p[key],original[key]);});
+test('CSV exports neutralize spreadsheet formulas',()=>{const content=csv([{w:1,h:1,qty:1,label:'=cmd()',material:'@SUM(1)',grain:'none'}]);assert.ok(content.includes("\"'=cmd()\""));assert.ok(content.includes("\"'@SUM(1)\""));});
+test('malformed input is rejected with useful errors',()=>{assert.throws(()=>parseDelimited('1,"missing'));assert.throws(()=>importRows(''));assert.throws(()=>importRows('이름,수량\na,2'));assert.throws(()=>readProject('{"version":2}'));});
+test('disabled imported rows still reject nonnumeric payloads',()=>{const row={id:'a',w:1,h:1,qty:'<img src=x>',label:'x',material:'',grain:'none',enabled:false};assert.throws(()=>readProject(JSON.stringify({version:1,parts:[row],stocks:[],settings:{kerf:0,trim:0,rotate:true,material:false,grain:false,single:false,quality:'quick',priority:'area'}})));});

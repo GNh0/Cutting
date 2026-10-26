@@ -1,0 +1,56 @@
+{
+  "count": 100,
+  "uniquePhysicalScenarios": 100,
+  "overlapsWithPriorAndWithinRun": 0,
+  "priorConditionsCompared": 379083,
+  "scenarioIndices": [
+    10000000,
+    10000099
+  ],
+  "phases": [
+    "compare layout candidates",
+    "freeze selected part positions and stock",
+    "rebuild shared guillotine cuts"
+  ],
+  "layoutCandidatesPerGroup": 240,
+  "baselineCandidatesPerGroup": 48,
+  "threads": 12,
+  "hashes": {
+    "src/optimizer.js": "7e3326402ba14741ec0131fc5ce7dae46066a6917a011953fad563e05e817410",
+    "src/materials.js": "fd3e115f7c2e9436e4b6de9d40570f75341bdca21856d8b9d00a8f7d48a31bbd",
+    "src/cut-plan.js": "944e9dbd52b2fa8faba4c4e4f9fd295e6371d9ae365fcc3409c08cd71d95f3b9",
+    "tools/complex-scenarios.mjs": "938006ca74864a37bd55909294ce8a25ed4098e8e6a0eaf17761a5f698b8b4b3"
+  },
+  "wallSeconds": 31.2081227,
+  "complexity": {
+    "minTypes": 24,
+    "maxTypes": 47,
+    "minPieces": 57,
+    "maxPieces": 1000,
+    "minStockTypes": 9,
+    "groups": [
+      3,
+      4
+    ],
+    "grainEnabled": true
+  },
+  "physicalAudits": 300,
+  "packingCandidates": 100800,
+  "groups": 350,
+  "layoutGroupWins": 232,
+  "layoutGroupTies": 118,
+  "layoutGroupLosses": 0,
+  "baselineStockArea": 5703342315.879999,
+  "selectedStockArea": 5671937606.33,
+  "baselineUnplaced": 7618,
+  "selectedUnplaced": 7294,
+  "baselineReusableArea": 922887914.56,
+  "selectedReusableArea": 919819328.7,
+  "selectedLargestRemnantSum": 124050777.73999998,
+  "layoutCuts": 33266,
+  "optimizedCuts": 30230,
+  "layoutCutLength": 22708537.5,
+  "optimizedCutLength": 21903137.1,
+  "largeQuantityCases": 30,
+  "thousandPartCases": 10
+}

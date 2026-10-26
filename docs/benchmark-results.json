@@ -1,0 +1,2156 @@
+{
+  "generatedScenarios": 100000,
+  "uniquePhysicalScenarios": 99663,
+  "split": "acceptance",
+  "threads": 4,
+  "engineSha256": "414bc6755450f85f27ab199a37971580f34228cbfca3e3f103b51388294aef25",
+  "algorithmRuns": 400000,
+  "verifiedPhysicalResults": 400000,
+  "packingCandidates": 24000000,
+  "wallSeconds": 246.0465913,
+  "stats": {
+    "baseline48": {
+      "runs": 100000,
+      "ms": 195749.54990000033,
+      "unplaced": 47793,
+      "stockArea": 389333988646.75,
+      "reusableArea": 147038087345.21506,
+      "largestRemnant": 110654459273.55052,
+      "cuts": 2179760,
+      "cutLength": 1486101478.6500003,
+      "win": 0,
+      "tie": 100000,
+      "loss": 0,
+      "primaryWin": 0,
+      "primaryLoss": 0,
+      "byFamily": {
+        "exact-grid": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "repeated-strip": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "mixed-cabinet": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "mixed-stock": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "limited-stock": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "grain-material": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "decimal-kerf": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        },
+        "long-thin": {
+          "win": 0,
+          "tie": 12500,
+          "loss": 0
+        }
+      }
+    },
+    "balanced48": {
+      "runs": 100000,
+      "ms": 194627.95829999837,
+      "unplaced": 47793,
+      "stockArea": 389333988646.75,
+      "reusableArea": 152456999094.5776,
+      "largestRemnant": 97937233198.9701,
+      "cuts": 2129525,
+      "cutLength": 1469261232.9000013,
+      "win": 55499,
+      "tie": 44501,
+      "loss": 0,
+      "primaryWin": 0,
+      "primaryLoss": 0,
+      "byFamily": {
+        "exact-grid": {
+          "win": 517,
+          "tie": 11983,
+          "loss": 0
+        },
+        "repeated-strip": {
+          "win": 8887,
+          "tie": 3613,
+          "loss": 0
+        },
+        "mixed-cabinet": {
+          "win": 10003,
+          "tie": 2497,
+          "loss": 0
+        },
+        "mixed-stock": {
+          "win": 6166,
+          "tie": 6334,
+          "loss": 0
+        },
+        "limited-stock": {
+          "win": 4616,
+          "tie": 7884,
+          "loss": 0
+        },
+        "grain-material": {
+          "win": 5215,
+          "tie": 7285,
+          "loss": 0
+        },
+        "decimal-kerf": {
+          "win": 10160,
+          "tie": 2340,
+          "loss": 0
+        },
+        "long-thin": {
+          "win": 9935,
+          "tie": 2565,
+          "loss": 0
+        }
+      }
+    },
+    "guided48": {
+      "runs": 100000,
+      "ms": 189082.2552000003,
+      "unplaced": 48523,
+      "stockArea": 389812756941.625,
+      "reusableArea": 152825652066.46265,
+      "largestRemnant": 97849860720.94757,
+      "cuts": 2114327,
+      "cutLength": 1474571481.1500018,
+      "win": 57397,
+      "tie": 30949,
+      "loss": 11654,
+      "primaryWin": 1318,
+      "primaryLoss": 2728,
+      "byFamily": {
+        "exact-grid": {
+          "win": 517,
+          "tie": 11983,
+          "loss": 0
+        },
+        "repeated-strip": {
+          "win": 8880,
+          "tie": 2394,
+          "loss": 1226
+        },
+        "mixed-cabinet": {
+          "win": 9839,
+          "tie": 1394,
+          "loss": 1267
+        },
+        "mixed-stock": {
+          "win": 7291,
+          "tie": 3032,
+          "loss": 2177
+        },
+        "limited-stock": {
+          "win": 5369,
+          "tie": 4158,
+          "loss": 2973
+        },
+        "grain-material": {
+          "win": 5540,
+          "tie": 4631,
+          "loss": 2329
+        },
+        "decimal-kerf": {
+          "win": 10094,
+          "tie": 1183,
+          "loss": 1223
+        },
+        "long-thin": {
+          "win": 9867,
+          "tie": 2174,
+          "loss": 459
+        }
+      }
+    },
+    "portfolio96": {
+      "runs": 100000,
+      "ms": 384122.07490000734,
+      "unplaced": 46711,
+      "stockArea": 388418959267.75,
+      "reusableArea": 151645245395.12756,
+      "largestRemnant": 97522133608.81256,
+      "cuts": 2099430,
+      "cutLength": 1470169481.8000016,
+      "win": 64777,
+      "tie": 29376,
+      "loss": 5847,
+      "primaryWin": 3270,
+      "primaryLoss": 887,
+      "byFamily": {
+        "exact-grid": {
+          "win": 517,
+          "tie": 11982,
+          "loss": 1
+        },
+        "repeated-strip": {
+          "win": 9809,
+          "tie": 2227,
+          "loss": 464
+        },
+        "mixed-cabinet": {
+          "win": 10681,
+          "tie": 1396,
+          "loss": 423
+        },
+        "mixed-stock": {
+          "win": 8229,
+          "tie": 2794,
+          "loss": 1477
+        },
+        "limited-stock": {
+          "win": 7658,
+          "tie": 3670,
+          "loss": 1172
+        },
+        "grain-material": {
+          "win": 6786,
+          "tie": 4425,
+          "loss": 1289
+        },
+        "decimal-kerf": {
+          "win": 10966,
+          "tie": 1175,
+          "loss": 359
+        },
+        "long-thin": {
+          "win": 10131,
+          "tie": 1707,
+          "loss": 662
+        }
+      }
+    },
+    "hybrid240": {
+      "runs": 100000,
+      "ms": 963581.8383000062,
+      "unplaced": 46463,
+      "stockArea": 388043782005.75,
+      "reusableArea": 151393251473.29764,
+      "largestRemnant": 97831695847.9976,
+      "cuts": 2113066,
+      "cutLength": 1465895272.3000004,
+      "win": 66053,
+      "tie": 33947,
+      "loss": 0,
+      "primaryWin": 3328,
+      "primaryLoss": 0,
+      "byFamily": {
+        "exact-grid": {
+          "win": 517,
+          "tie": 11983,
+          "loss": 0
+        },
+        "repeated-strip": {
+          "win": 9955,
+          "tie": 2545,
+          "loss": 0
+        },
+        "mixed-cabinet": {
+          "win": 10830,
+          "tie": 1670,
+          "loss": 0
+        },
+        "mixed-stock": {
+          "win": 8614,
+          "tie": 3886,
+          "loss": 0
+        },
+        "limited-stock": {
+          "win": 7831,
+          "tie": 4669,
+          "loss": 0
+        },
+        "grain-material": {
+          "win": 6962,
+          "tie": 5538,
+          "loss": 0
+        },
+        "decimal-kerf": {
+          "win": 11080,
+          "tie": 1420,
+          "loss": 0
+        },
+        "long-thin": {
+          "win": 10264,
+          "tie": 2236,
+          "loss": 0
+        }
+      }
+    }
+  },
+  "timingSummary": {
+    "baseline48": {
+      "medianMs": 1.7313000000140164,
+      "p95Ms": 4.055999999996857,
+      "maxMs": 25.950900000000004,
+      "hybridTimingIsSumOfComponentTimes": false
+    },
+    "balanced48": {
+      "medianMs": 1.7131999999983236,
+      "p95Ms": 4.060899999982212,
+      "maxMs": 25.7841000000044,
+      "hybridTimingIsSumOfComponentTimes": false
+    },
+    "guided48": {
+      "medianMs": 1.6657999999952153,
+      "p95Ms": 3.9399999999950523,
+      "maxMs": 15.407600000000002,
+      "hybridTimingIsSumOfComponentTimes": false
+    },
+    "portfolio96": {
+      "medianMs": 3.408800000004703,
+      "p95Ms": 7.943799999993644,
+      "maxMs": 28.98859999999695,
+      "hybridTimingIsSumOfComponentTimes": false
+    },
+    "hybrid240": {
+      "medianMs": 8.588900000031572,
+      "p95Ms": 19.738300000011805,
+      "maxMs": 71.7186000000001,
+      "hybridTimingIsSumOfComponentTimes": true
+    }
+  },
+  "disagreements": [
+    {
+      "index": 1,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2766960,
+        "cuts": 27
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2253950,
+        "cuts": 25
+      }
+    },
+    {
+      "index": 1,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2766960,
+        "cuts": 27
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2253950,
+        "cuts": 25
+      }
+    },
+    {
+      "index": 1,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2766960,
+        "cuts": 27
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2181360,
+        "cuts": 32
+      }
+    },
+    {
+      "index": 2,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 6832000,
+        "largest": 1206322,
+        "cuts": 35
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 6832000,
+        "largest": 587047,
+        "cuts": 37
+      }
+    },
+    {
+      "index": 2,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 6832000,
+        "largest": 1206322,
+        "cuts": 35
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 6832000,
+        "largest": 658662,
+        "cuts": 37
+      }
+    },
+    {
+      "index": 2,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 6832000,
+        "largest": 1206322,
+        "cuts": 35
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 6832000,
+        "largest": 275720,
+        "cuts": 37
+      }
+    },
+    {
+      "index": 3,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1053630,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1010646,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 3,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1053630,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1010646,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 3,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1053630,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1010646,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 4,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1412760,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 431880,
+        "cuts": 26
+      }
+    },
+    {
+      "index": 4,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1412760,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 629520,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 4,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1412760,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 629520,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 5,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2486360,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2486360,
+        "cuts": 17
+      }
+    },
+    {
+      "index": 5,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2486360,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2486360,
+        "cuts": 17
+      }
+    },
+    {
+      "index": 6,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 190288.3125,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 167471.5625,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 6,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 190288.3125,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 155008.5625,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 6,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 190288.3125,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 77114.625,
+        "cuts": 21
+      }
+    },
+    {
+      "index": 7,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2646288,
+        "cuts": 10
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2273274,
+        "cuts": 9
+      }
+    },
+    {
+      "index": 7,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2646288,
+        "cuts": 10
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2273274,
+        "cuts": 9
+      }
+    },
+    {
+      "index": 7,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2646288,
+        "cuts": 10
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2273274,
+        "cuts": 9
+      }
+    },
+    {
+      "index": 9,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 8930400,
+        "largest": 1332240,
+        "cuts": 34
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 8930400,
+        "largest": 940620,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 9,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 8930400,
+        "largest": 1332240,
+        "cuts": 34
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 8930400,
+        "largest": 940620,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 9,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 8930400,
+        "largest": 1332240,
+        "cuts": 34
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 8930400,
+        "largest": 940620,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 10,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 8540000,
+        "largest": 3080500,
+        "cuts": 41
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 8540000,
+        "largest": 2248400,
+        "cuts": 33
+      }
+    },
+    {
+      "index": 25001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 4651250,
+        "largest": 3728625,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 4651250,
+        "largest": 3583750,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 25001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 4651250,
+        "largest": 3728625,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 4651250,
+        "largest": 3583750,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 25001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 4651250,
+        "largest": 3728625,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 4651250,
+        "largest": 3728625,
+        "cuts": 21
+      }
+    },
+    {
+      "index": 25002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 731500,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 442000,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 731500,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 497250,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 25002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 731500,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 520650,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 25003,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2688400,
+        "largest": 350000,
+        "cuts": 20
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2688400,
+        "largest": 279000,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 25003,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2688400,
+        "largest": 350000,
+        "cuts": 20
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2688400,
+        "largest": 280000,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 25003,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2688400,
+        "largest": 350000,
+        "cuts": 20
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2688400,
+        "largest": 279000,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 25004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 67200,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 36000,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 67200,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 48000,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 67200,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 48000,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25005,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "guided48",
+      "relation": "loss",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2488800,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2488800,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25005,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2488800,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 2488800,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 147243.35,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 127167.975,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 147243.35,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 72434.25000000004,
+        "cuts": 23
+      }
+    },
+    {
+      "index": 25006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 147243.35,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 125779.5,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 25007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1761200,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1554000,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 25007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1761200,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1554000,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 25007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1761200,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1554000,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 25009,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2989000,
+        "cuts": 36
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2940200,
+        "cuts": 35
+      }
+    },
+    {
+      "index": 25009,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2989000,
+        "cuts": 36
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2940200,
+        "cuts": 35
+      }
+    },
+    {
+      "index": 25009,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2989000,
+        "cuts": 36
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2745000,
+        "cuts": 29
+      }
+    },
+    {
+      "index": 25010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 4270000,
+        "largest": 2497950,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 4270000,
+        "largest": 2312024,
+        "cuts": 22
+      }
+    },
+    {
+      "index": 50001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5581500,
+        "largest": 585224,
+        "cuts": 35
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5581500,
+        "largest": 389340,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 50001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5581500,
+        "largest": 585224,
+        "cuts": 35
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5581500,
+        "largest": 389340,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 50001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5581500,
+        "largest": 585224,
+        "cuts": 35
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5581500,
+        "largest": 389340,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 50002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2803560,
+        "cuts": 32
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2461960,
+        "cuts": 26
+      }
+    },
+    {
+      "index": 50002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2803560,
+        "cuts": 32
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2461960,
+        "cuts": 26
+      }
+    },
+    {
+      "index": 50002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2803560,
+        "cuts": 32
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 7442000,
+        "largest": 2893840,
+        "cuts": 32
+      }
+    },
+    {
+      "index": 50003,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2788400,
+        "largest": 412032,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2788400,
+        "largest": 292000,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 50003,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2788400,
+        "largest": 412032,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2788400,
+        "largest": 292000,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 50003,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2788400,
+        "largest": 412032,
+        "cuts": 22
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2788400,
+        "largest": 388000,
+        "cuts": 18
+      }
+    },
+    {
+      "index": 50004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 394800,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 197600,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 50004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 394800,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 197600,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 50004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 394800,
+        "cuts": 19
+      },
+      "candidate": {
+        "unplaced": 1,
+        "stockArea": 2976800,
+        "largest": 362880,
+        "cuts": 20
+      }
+    },
+    {
+      "index": 50005,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1855725,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1628700,
+        "cuts": 13
+      }
+    },
+    {
+      "index": 50005,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1855725,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1628700,
+        "cuts": 13
+      }
+    },
+    {
+      "index": 50005,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1855725,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1628700,
+        "cuts": 13
+      }
+    },
+    {
+      "index": 50006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 344964,
+        "cuts": 15
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 275272.5,
+        "cuts": 13
+      }
+    },
+    {
+      "index": 50006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 344964,
+        "cuts": 15
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 356845.5,
+        "cuts": 13
+      }
+    },
+    {
+      "index": 50006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 344964,
+        "cuts": 15
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 356845.5,
+        "cuts": 13
+      }
+    },
+    {
+      "index": 50007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2089825,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1342500,
+        "cuts": 11
+      }
+    },
+    {
+      "index": 50007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2089825,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1342500,
+        "cuts": 11
+      }
+    },
+    {
+      "index": 50007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 2089825,
+        "cuts": 16
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1342500,
+        "cuts": 11
+      }
+    },
+    {
+      "index": 50010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 12810000,
+        "largest": 2798375,
+        "cuts": 30
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 12810000,
+        "largest": 1302000,
+        "cuts": 28
+      }
+    },
+    {
+      "index": 50010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 12810000,
+        "largest": 2798375,
+        "cuts": 30
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 12810000,
+        "largest": 2546750,
+        "cuts": 31
+      }
+    },
+    {
+      "index": 50010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 12810000,
+        "largest": 2798375,
+        "cuts": 30
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 12810000,
+        "largest": 2073600,
+        "cuts": 27
+      }
+    },
+    {
+      "index": 75001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1664080,
+        "cuts": 26
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1444140,
+        "cuts": 26
+      }
+    },
+    {
+      "index": 75001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1664080,
+        "cuts": 26
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1517270,
+        "cuts": 25
+      }
+    },
+    {
+      "index": 75001,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1664080,
+        "cuts": 26
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1517270,
+        "cuts": 25
+      }
+    },
+    {
+      "index": 75002,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "guided48",
+      "relation": "loss",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 101199,
+        "cuts": 32
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 130052,
+        "cuts": 33
+      }
+    },
+    {
+      "index": 75004,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "guided48",
+      "relation": "loss",
+      "baseline": {
+        "unplaced": 4,
+        "stockArea": 5953600,
+        "largest": 105700,
+        "cuts": 26
+      },
+      "candidate": {
+        "unplaced": 5,
+        "stockArea": 5953600,
+        "largest": 171369,
+        "cuts": 26
+      }
+    },
+    {
+      "index": 75005,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "guided48",
+      "relation": "loss",
+      "baseline": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 1993480,
+        "cuts": 29
+      },
+      "candidate": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 1993480,
+        "cuts": 28
+      }
+    },
+    {
+      "index": 75006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 634182.675,
+        "cuts": 9
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 616883.8375,
+        "cuts": 8
+      }
+    },
+    {
+      "index": 75006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 634182.675,
+        "cuts": 9
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 616883.8375,
+        "cuts": 8
+      }
+    },
+    {
+      "index": 75006,
+      "split": "acceptance",
+      "family": "decimal-kerf",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 634182.675,
+        "cuts": 9
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 988910.125,
+        "largest": 616883.8375,
+        "cuts": 8
+      }
+    },
+    {
+      "index": 75007,
+      "split": "acceptance",
+      "family": "long-thin",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 1106600,
+        "cuts": 24
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 773111,
+        "cuts": 25
+      }
+    },
+    {
+      "index": 75009,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1821788,
+        "cuts": 20
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1744600,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 75009,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1821788,
+        "cuts": 20
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1686204,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 75009,
+      "split": "acceptance",
+      "family": "repeated-strip",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1821788,
+        "cuts": 20
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 3721000,
+        "largest": 1692724,
+        "cuts": 19
+      }
+    },
+    {
+      "index": 75010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 977832,
+        "cuts": 21
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 779024,
+        "cuts": 22
+      }
+    },
+    {
+      "index": 75010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 977832,
+        "cuts": 21
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 779024,
+        "cuts": 22
+      }
+    },
+    {
+      "index": 75010,
+      "split": "acceptance",
+      "family": "mixed-cabinet",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 977832,
+        "cuts": 21
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 2976800,
+        "largest": 779024,
+        "cuts": 22
+      }
+    },
+    {
+      "index": 75011,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "guided48",
+      "relation": "loss",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 744200,
+        "largest": 326424,
+        "cuts": 10
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 744200,
+        "largest": 305624,
+        "cuts": 11
+      }
+    },
+    {
+      "index": 75011,
+      "split": "acceptance",
+      "family": "mixed-stock",
+      "profile": "portfolio96",
+      "relation": "loss",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 744200,
+        "largest": 326424,
+        "cuts": 10
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 744200,
+        "largest": 305624,
+        "cuts": 11
+      }
+    },
+    {
+      "index": 75012,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1590880,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1503040,
+        "cuts": 21
+      }
+    },
+    {
+      "index": 75012,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1590880,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1034560,
+        "cuts": 25
+      }
+    },
+    {
+      "index": 75012,
+      "split": "acceptance",
+      "family": "limited-stock",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1590880,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 0,
+        "stockArea": 5953600,
+        "largest": 1590880,
+        "cuts": 21
+      }
+    },
+    {
+      "index": 75013,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "balanced48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 809600,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 649040,
+        "cuts": 22
+      }
+    },
+    {
+      "index": 75013,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "guided48",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 809600,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 652800,
+        "cuts": 24
+      }
+    },
+    {
+      "index": 75013,
+      "split": "acceptance",
+      "family": "grain-material",
+      "profile": "portfolio96",
+      "relation": "win",
+      "baseline": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 809600,
+        "cuts": 23
+      },
+      "candidate": {
+        "unplaced": 2,
+        "stockArea": 5953600,
+        "largest": 649040,
+        "cuts": 22
+      }
+    }
+  ]
+}

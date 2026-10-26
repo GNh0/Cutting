@@ -1,0 +1,27 @@
+{
+  "baselineCommit": "6af9b30",
+  "scenario": "exact 19-part bookshelf, 2440x1220 qty3, kerf3, trim0, 18mm A, minimum remnant width100",
+  "before": {
+    "placed": 19,
+    "total": 19,
+    "sheets": 2,
+    "stockAreaM2": 5.9536,
+    "utilization": 60.43294813222252,
+    "reusableAreaM2": 2.237384,
+    "largestRemnantM2": 1.50548,
+    "cuts": 26,
+    "cutLengthM": 18.76
+  },
+  "after": {
+    "placed": 19,
+    "total": 19,
+    "sheets": 2,
+    "stockAreaM2": 5.9536,
+    "utilization": 60.43294813222252,
+    "reusableAreaM2": 2.237384,
+    "largestRemnantM2": 1.50548,
+    "cuts": 25,
+    "cutLengthM": 18.753
+  },
+  "unchangedPositions": true
+}

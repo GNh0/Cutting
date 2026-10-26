@@ -1,0 +1,23 @@
+{
+  "scenarioCount": 1000,
+  "newScenarioIndexRange": [
+    5000000,
+    5000999
+  ],
+  "allPhysicalAuditsPassed": true,
+  "strictMaterialGroups": true,
+  "sourceHashes": {
+    "src/optimizer.js": "7e3326402ba14741ec0131fc5ce7dae46066a6917a011953fad563e05e817410",
+    "src/materials.js": "fd3e115f7c2e9436e4b6de9d40570f75341bdca21856d8b9d00a8f7d48a31bbd",
+    "src/cut-plan.js": "944e9dbd52b2fa8faba4c4e4f9fd295e6371d9ae365fcc3409c08cd71d95f3b9"
+  },
+  "boards": 1590,
+  "refinedBoards": 1218,
+  "cutsSaved": 1306,
+  "actualHybridTiming": {
+    "meanMs": 24.25700460000005,
+    "medianMs": 19.98960000000079,
+    "p95Ms": 57.100399999999354,
+    "maxMs": 119.64949999999953
+  }
+}
